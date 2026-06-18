@@ -20,6 +20,7 @@ async function CakesPage() {
           heading="Discover Custom Cakes"
           image={heroImage}
           imageAlt="cakes"
+          searchForm={<div />}
           description={
             <>
               <p className="max-w-xl text-base text-neutral-500 sm:text-xl dark:text-neutral-400">
