@@ -4,6 +4,7 @@ import T from '@/utils/getT'
 import { CloseButton, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { Airplane02Icon, Building03Icon, Car03Icon, HotAirBalloonIcon, House04Icon } from '@hugeicons/core-free-icons'
+import { CakeIcon } from '@/components/Icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -32,6 +33,12 @@ const solutions = [
     description: T['Header']['DropdownTravelers']['experienceDescription'],
     href: '/experience',
     icon: HotAirBalloonIcon,
+  },
+  {
+    name: T['Header']['DropdownTravelers']['Cakes'],
+    description: T['Header']['DropdownTravelers']['cakeDescription'],
+    href: '/cakes',
+    icon: CakeIcon,
   },
   {
     name: T['Header']['DropdownTravelers']['Flights'],

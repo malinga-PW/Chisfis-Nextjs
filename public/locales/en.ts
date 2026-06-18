@@ -63,6 +63,8 @@ export const en = {
       footerDescription: 'Find the perfect place to stay, car to rent, or experience to enjoy',
       Flights: 'Flights',
       'Flight description': 'Find the perfect flight',
+      Cakes: 'Cakes',
+      cakeDescription: 'Find the perfect custom cake',
     },
   },
   HeroSearchForm: {

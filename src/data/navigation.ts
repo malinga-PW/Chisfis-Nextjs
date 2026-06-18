@@ -39,6 +39,7 @@ export async function getNavigation(): Promise<TNavigationItem[]> {
             { id: '1-3', href: '/experience', name: 'Experiences' },
             { id: '1-4', href: '/car', name: 'Car rentals' },
             { id: '1-5', href: '/flight-categories/all', name: 'Flights' },
+            { id: '1-7', href: '/cakes', name: 'Cakes' },
             { id: '1-6', href: '/home-2', name: 'Home 2' },
           ],
         },
@@ -53,6 +54,7 @@ export async function getNavigation(): Promise<TNavigationItem[]> {
             { id: '2-3', href: '/experience-categories/all', name: 'Experiences ' },
             { id: '2-5', href: '/flight-categories/all', name: 'Flight Categories' },
             { id: '2-6', href: '/stay-categories-map/all', name: 'Search with Map', isNew: true },
+            { id: '2-7', href: '/cakes', name: 'Cakes', isNew: true },
           ],
         },
         {
@@ -122,6 +124,11 @@ export async function getNavigation(): Promise<TNavigationItem[]> {
           id: '5',
           href: '/flight-categories/all',
           name: 'Flights',
+        },
+        {
+          id: '7',
+          href: '/cakes',
+          name: 'Cakes',
         },
       ],
     },

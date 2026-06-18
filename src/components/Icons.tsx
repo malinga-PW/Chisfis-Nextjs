@@ -1661,3 +1661,57 @@ export const Timer02Icon = (props: React.SVGProps<SVGSVGElement>) => (
 		/>
 	</svg>
 )
+
+export const CakeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 24 24"
+		width={24}
+		height={24}
+		color={'currentColor'}
+		fill={'none'}
+		{...props}
+	>
+		<path
+			d="M12 4C13.1046 4 14 3.10457 14 2C14 1.44772 13.5523 1 13 1C12.4477 1 12 1.44772 12 2C12 3.10457 11.1046 4 10 4C8.89543 4 8 3.10457 8 2C8 1.44772 8.44771 1 9 1C9.55228 1 10 1.44772 10 2C10 3.10457 10.8954 4 12 4Z"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+		<path
+			d="M4 21H20"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+		/>
+		<path
+			d="M20 17L19.1818 11.8182C19.077 11.0919 18.6563 10.4469 18.032 10.0673C17.5754 9.79083 17.0363 9.63636 16.485 9.63636H7.515C6.96371 9.63636 6.4246 9.79083 5.96801 10.0673C5.34373 10.4469 4.92302 11.0919 4.81816 11.8182L4 17"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+		<path
+			d="M4 17C4 18.6569 5.34315 20 7 20C8.65685 20 10 18.6569 10 17"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+		<path
+			d="M14 17C14 18.6569 15.3431 20 17 20C18.6569 20 20 18.6569 20 17"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+		<path
+			d="M12 9.63636V5"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+		/>
+		<circle cx="12" cy="13.5" r="1" fill="currentColor" />
+	</svg>
+)
