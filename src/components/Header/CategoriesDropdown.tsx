@@ -9,7 +9,12 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const solutions = [
+const solutions: {
+  name: string
+  description: string
+  href: string
+  icon: any
+}[] = [
   {
     name: T['Header']['DropdownTravelers']['Stays'],
     description: T['Header']['DropdownTravelers']['stayDescription'],
@@ -79,7 +84,11 @@ export default function DropdownTravelers() {
                   }`}
                 >
                   <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-md bg-neutral-50 text-primary-500 sm:h-12 sm:w-12 dark:bg-neutral-700 dark:text-primary-200">
-                    <HugeiconsIcon icon={item.icon} size={28} color="currentColor" strokeWidth={1.5} />
+                    {typeof item.icon === 'function' ? (
+                      <item.icon />
+                    ) : (
+                      <HugeiconsIcon icon={item.icon} size={28} color="currentColor" strokeWidth={1.5} />
+                    )}
                   </div>
                   <div className="ms-4 space-y-0.5">
                     <p className="text-sm font-medium">{item.name}</p>
