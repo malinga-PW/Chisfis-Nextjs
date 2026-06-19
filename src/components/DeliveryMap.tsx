@@ -8,12 +8,23 @@ import { useEffect, useState } from 'react'
 interface Props {
   onLocationChange?: (lat: number, lng: number) => void
   height?: string
+  initialLat?: number
+  initialLng?: number
+  draggable?: boolean
+  showLocateButton?: boolean
 }
 
 const DEFAULT_CENTER: [number, number] = [79.8612, 6.9271]
 
-export const DeliveryMap = ({ onLocationChange, height = 'h-72' }: Props) => {
-  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: DEFAULT_CENTER[1], lng: DEFAULT_CENTER[0] })
+export const DeliveryMap = ({
+  onLocationChange,
+  height = 'h-72',
+  initialLat = DEFAULT_CENTER[1],
+  initialLng = DEFAULT_CENTER[0],
+  draggable = true,
+  showLocateButton = true,
+}: Props) => {
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: initialLat, lng: initialLng })
   const [isLocating, setIsLocating] = useState(false)
 
   useEffect(() => {
@@ -44,8 +55,11 @@ export const DeliveryMap = ({ onLocationChange, height = 'h-72' }: Props) => {
           <MapMarker
             longitude={position.lng}
             latitude={position.lat}
-            draggable
-            onDragEnd={(lngLat) => setPosition({ lat: lngLat.lat, lng: lngLat.lng })}
+            draggable={draggable}
+            onDragEnd={(lngLat) => {
+              if (!draggable) return
+              setPosition({ lat: lngLat.lat, lng: lngLat.lng })
+            }}
           >
             <MarkerContent>
               <div className="flex size-8 items-center justify-center rounded-full bg-neutral-900 text-white shadow-lg dark:bg-white dark:text-neutral-900">
@@ -58,15 +72,17 @@ export const DeliveryMap = ({ onLocationChange, height = 'h-72' }: Props) => {
           <MapControls showZoom showLocate={false} />
         </Map>
       </div>
-      <button
-        type="button"
-        onClick={handleLocateMe}
-        disabled={isLocating}
-        className="absolute bottom-3 right-3 z-20 flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-medium shadow-md transition-colors hover:bg-neutral-50 disabled:opacity-50 dark:bg-neutral-800 dark:hover:bg-neutral-700"
-      >
-        <HugeiconsIcon icon={Location01Icon} size={16} className={isLocating ? 'animate-spin' : ''} />
-        {isLocating ? 'Locating...' : 'Use My Current Location'}
-      </button>
+      {showLocateButton && (
+        <button
+          type="button"
+          onClick={handleLocateMe}
+          disabled={isLocating}
+          className="absolute bottom-3 right-3 z-20 flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-medium shadow-md transition-colors hover:bg-neutral-50 disabled:opacity-50 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+        >
+          <HugeiconsIcon icon={Location01Icon} size={16} className={isLocating ? 'animate-spin' : ''} />
+          {isLocating ? 'Locating...' : 'Use My Current Location'}
+        </button>
+      )}
     </div>
   )
 }

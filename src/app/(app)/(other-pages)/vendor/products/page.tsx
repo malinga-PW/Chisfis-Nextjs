@@ -1,5 +1,6 @@
 'use client'
 
+import { DeliveryMap } from '@/components/DeliveryMap'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { Divider } from '@/shared/divider'
 import { useState } from 'react'
@@ -11,14 +12,19 @@ interface CakeProduct {
   price: number
   weights: string[]
   deliveryAreas: string[]
+  deliveryMode: 'areas' | 'radius'
+  deliveryRadiusKm: number
+  customAreaName: string
+  lat: number
+  lng: number
   image: string
 }
 
 const INITIAL_PRODUCTS: CakeProduct[] = [
-  { id: 'p1', title: 'Classic Vanilla Wedding Cake', category: 'Wedding', price: 15000, weights: ['3kg', '5kg'], deliveryAreas: ['Colombo', 'Kandy'], image: '' },
-  { id: 'p2', title: 'Chocolate Fudge Birthday Cake', category: 'Birthday', price: 6800, weights: ['1kg', '2kg', '3kg'], deliveryAreas: ['Colombo', 'Nugegoda'], image: '' },
-  { id: 'p3', title: 'Red Velvet Anniversary Cake', category: 'Anniversary', price: 8500, weights: ['2kg', '3kg'], deliveryAreas: ['Colombo', 'Galle'], image: '' },
-  { id: 'p4', title: 'Cupcake Box (12 pcs)', category: 'Cupcakes', price: 2800, weights: ['1kg'], deliveryAreas: ['Colombo', 'Kandy', 'Galle'], image: '' },
+  { id: 'p1', title: 'Classic Vanilla Wedding Cake', category: 'Wedding', price: 15000, weights: ['3kg', '5kg'], deliveryAreas: ['Colombo', 'Kandy'], deliveryMode: 'areas', deliveryRadiusKm: 12, customAreaName: '', lat: 6.9271, lng: 79.8612, image: '' },
+  { id: 'p2', title: 'Chocolate Fudge Birthday Cake', category: 'Birthday', price: 6800, weights: ['1kg', '2kg', '3kg'], deliveryAreas: ['Colombo', 'Nugegoda'], deliveryMode: 'radius', deliveryRadiusKm: 15, customAreaName: '', lat: 6.9000, lng: 79.9500, image: '' },
+  { id: 'p3', title: 'Red Velvet Anniversary Cake', category: 'Anniversary', price: 8500, weights: ['2kg', '3kg'], deliveryAreas: ['Colombo', 'Galle'], deliveryMode: 'areas', deliveryRadiusKm: 10, customAreaName: '', lat: 6.8800, lng: 79.9100, image: '' },
+  { id: 'p4', title: 'Cupcake Box (12 pcs)', category: 'Cupcakes', price: 2800, weights: ['1kg'], deliveryAreas: ['Colombo', 'Kandy', 'Galle'], deliveryMode: 'areas', deliveryRadiusKm: 8, customAreaName: '', lat: 6.9400, lng: 79.8700, image: '' },
 ]
 
 const CATEGORIES = ['Birthday', 'Wedding', 'Anniversary', 'Corporate', 'Custom Design', 'Cupcakes']
@@ -27,7 +33,19 @@ const AREA_OPTIONS = ['Colombo', 'Kandy', 'Galle', 'Nugegoda', 'Negombo', 'Jaffn
 
 type ProductForm = Omit<CakeProduct, 'id'>
 
-const EMPTY_FORM: ProductForm = { title: '', category: 'Birthday', price: 0, weights: [], deliveryAreas: [], image: '' }
+const EMPTY_FORM: ProductForm = {
+  title: '',
+  category: 'Birthday',
+  price: 0,
+  weights: [],
+  deliveryAreas: [],
+  deliveryMode: 'areas',
+  deliveryRadiusKm: 10,
+  customAreaName: '',
+  lat: 6.9271,
+  lng: 79.8612,
+  image: '',
+}
 
 export default function VendorProductsPage() {
   const [products, setProducts] = useState<CakeProduct[]>(INITIAL_PRODUCTS)
@@ -44,7 +62,19 @@ export default function VendorProductsPage() {
   }
 
   const openEdit = (product: CakeProduct) => {
-    setForm({ title: product.title, category: product.category, price: product.price, weights: [...product.weights], deliveryAreas: [...product.deliveryAreas], image: product.image })
+    setForm({
+      title: product.title,
+      category: product.category,
+      price: product.price,
+      weights: [...product.weights],
+      deliveryAreas: [...product.deliveryAreas],
+      deliveryMode: product.deliveryMode,
+      deliveryRadiusKm: product.deliveryRadiusKm,
+      customAreaName: product.customAreaName,
+      lat: product.lat,
+      lng: product.lng,
+      image: product.image,
+    })
     setEditingId(product.id)
     setImagePreview(product.image || null)
     setShowForm(true)
@@ -52,10 +82,17 @@ export default function VendorProductsPage() {
 
   const handleSave = () => {
     if (!form.title || form.price <= 0) return
+
+    const normalizedAreas = form.customAreaName.trim()
+      ? Array.from(new Set([...form.deliveryAreas, form.customAreaName.trim()]))
+      : form.deliveryAreas
+
+    const nextForm = { ...form, deliveryAreas: normalizedAreas }
+
     if (editingId) {
-      setProducts((prev) => prev.map((p) => p.id === editingId ? { ...p, ...form } : p))
+      setProducts((prev) => prev.map((p) => p.id === editingId ? { ...p, ...nextForm } : p))
     } else {
-      setProducts((prev) => [...prev, { ...form, id: `p${Date.now()}` }])
+      setProducts((prev) => [...prev, { ...nextForm, id: `p${Date.now()}` }])
     }
     resetForm()
   }
@@ -103,7 +140,9 @@ export default function VendorProductsPage() {
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{product.title}</p>
                 <p className="text-sm text-neutral-500">{product.category} &middot; LKR {product.price.toLocaleString()} &middot; {product.weights.join(', ')}</p>
-                <p className="text-xs text-neutral-400">Delivery: {product.deliveryAreas.join(', ')}</p>
+                <p className="text-xs text-neutral-400">
+                  Delivery: {product.deliveryMode === 'radius' ? `${product.deliveryRadiusKm} km radius` : product.deliveryAreas.join(', ')}
+                </p>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => openEdit(product)} className="rounded-lg border border-neutral-200 px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800">Edit</button>
@@ -148,11 +187,66 @@ export default function VendorProductsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Delivery Areas</label>
-                  <div className="mt-1 flex flex-wrap gap-2">
-                    {AREA_OPTIONS.map((a) => (
-                      <button key={a} type="button" onClick={() => toggleArea(a)} className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${form.deliveryAreas.includes(a) ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400'}`}>{a}</button>
-                    ))}
+                  <label className="text-sm font-medium">Location Mode</label>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setForm((p) => ({ ...p, deliveryMode: 'areas' }))}
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm ${form.deliveryMode === 'areas' ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'}`}
+                    >
+                      <span className={`h-3 w-3 rounded-full ${form.deliveryMode === 'areas' ? 'bg-white dark:bg-neutral-900' : 'bg-neutral-300 dark:bg-neutral-600'}`} />
+                      Area by name
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm((p) => ({ ...p, deliveryMode: 'radius' }))}
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm ${form.deliveryMode === 'radius' ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'}`}
+                    >
+                      <span className={`h-3 w-3 rounded-full ${form.deliveryMode === 'radius' ? 'bg-white dark:bg-neutral-900' : 'bg-neutral-300 dark:bg-neutral-600'}`} />
+                      Radius circle
+                    </button>
+                  </div>
+                </div>
+
+                {form.deliveryMode === 'areas' ? (
+                  <div>
+                    <label className="text-sm font-medium">Delivery Areas</label>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {AREA_OPTIONS.map((a) => (
+                        <button key={a} type="button" onClick={() => toggleArea(a)} className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${form.deliveryAreas.includes(a) ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400'}`}>{a}</button>
+                      ))}
+                    </div>
+                    <input
+                      type="text"
+                      value={form.customAreaName}
+                      onChange={(e) => setForm((p) => ({ ...p, customAreaName: e.target.value }))}
+                      placeholder="Optional area name (e.g. Homagama)"
+                      className="mt-2 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="text-sm font-medium">Delivery Radius ({form.deliveryRadiusKm} km)</label>
+                    <input
+                      type="range"
+                      min={1}
+                      max={50}
+                      value={form.deliveryRadiusKm}
+                      onChange={(e) => setForm((p) => ({ ...p, deliveryRadiusKm: Number(e.target.value) }))}
+                      className="mt-2 w-full accent-neutral-900"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-sm font-medium">Map Preview</label>
+                  <div className="mt-2 overflow-hidden rounded-xl">
+                    <DeliveryMap
+                      initialLat={form.lat}
+                      initialLng={form.lng}
+                      onLocationChange={(latitude, longitude) => setForm((p) => ({ ...p, lat: latitude, lng: longitude }))}
+                      height="h-48"
+                    />
                   </div>
                 </div>
 

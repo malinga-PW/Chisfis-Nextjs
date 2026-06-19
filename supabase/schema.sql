@@ -35,8 +35,31 @@ create table if not exists public.buyers (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.vendor_business_email_accounts (
+  vendor_id text primary key,
+  local_part text not null,
+  domain text not null default 'hostlanka.online',
+  forwarding_email text not null default '',
+  notifications_enabled boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.vendor_business_email_messages (
+  id text primary key,
+  vendor_id text not null,
+  sender text not null,
+  subject text not null,
+  preview text not null,
+  received_at timestamptz not null default now(),
+  is_read boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
 alter table public.vendors enable row level security;
 alter table public.buyers enable row level security;
+alter table public.vendor_business_email_accounts enable row level security;
+alter table public.vendor_business_email_messages enable row level security;
 
 drop policy if exists "Allow read vendors" on public.vendors;
 create policy "Allow read vendors" on public.vendors for select using (true);
@@ -49,3 +72,15 @@ create policy "Allow read buyers" on public.buyers for select using (true);
 
 drop policy if exists "Allow write buyers" on public.buyers;
 create policy "Allow write buyers" on public.buyers for all using (true) with check (true);
+
+drop policy if exists "Allow read business email accounts" on public.vendor_business_email_accounts;
+create policy "Allow read business email accounts" on public.vendor_business_email_accounts for select using (true);
+
+drop policy if exists "Allow write business email accounts" on public.vendor_business_email_accounts;
+create policy "Allow write business email accounts" on public.vendor_business_email_accounts for all using (true) with check (true);
+
+drop policy if exists "Allow read business email messages" on public.vendor_business_email_messages;
+create policy "Allow read business email messages" on public.vendor_business_email_messages for select using (true);
+
+drop policy if exists "Allow write business email messages" on public.vendor_business_email_messages;
+create policy "Allow write business email messages" on public.vendor_business_email_messages for all using (true) with check (true);

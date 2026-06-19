@@ -18,6 +18,10 @@ export interface TCakeListing {
   isGlutenFreeAvailable: boolean
   isHalalCertified: boolean
   minOrderNotice: string
+  lat: number
+  lng: number
+  deliveryMode: 'areas' | 'radius'
+  deliveryRadiusKm?: number
 }
 
 const LOGO = (name: string) =>
@@ -64,6 +68,9 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     isGlutenFreeAvailable: false,
     isHalalCertified: true,
     minOrderNotice: '48 hours',
+    lat: 6.8788,
+    lng: 79.9790,
+    deliveryMode: 'areas',
   },
   {
     id: 'kcct-kiribathgoda',
@@ -85,6 +92,10 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     isGlutenFreeAvailable: true,
     isHalalCertified: true,
     minOrderNotice: '24 hours',
+    lat: 6.9774,
+    lng: 79.9299,
+    deliveryMode: 'radius',
+    deliveryRadiusKm: 18,
   },
   {
     id: 'kavi-happy-rajanganaya',
@@ -106,6 +117,9 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     isGlutenFreeAvailable: false,
     isHalalCertified: true,
     minOrderNotice: '72 hours',
+    lat: 8.1993,
+    lng: 80.3668,
+    deliveryMode: 'areas',
   },
   {
     id: 'perera-mulleriyawa',
@@ -127,6 +141,10 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     isGlutenFreeAvailable: false,
     isHalalCertified: true,
     minOrderNotice: '24 hours',
+    lat: 6.9357,
+    lng: 79.9412,
+    deliveryMode: 'radius',
+    deliveryRadiusKm: 12,
   },
   {
     id: 'perera-malabe',
@@ -148,5 +166,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     isGlutenFreeAvailable: true,
     isHalalCertified: true,
     minOrderNotice: '48 hours',
+    lat: 6.9049,
+    lng: 79.9583,
+    deliveryMode: 'areas',
   },
 ]

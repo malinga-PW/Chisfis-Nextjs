@@ -1,6 +1,7 @@
 'use client'
 
 import CakeOrderWidget from '@/app/(app)/(listings)/components/CakeOrderWidget'
+import { DeliveryMap } from '@/components/DeliveryMap'
 import { DEMO_CAKES_DATA } from '@/data/cakes'
 import { Divider } from '@/shared/divider'
 import { MapPinIcon } from '@heroicons/react/24/outline'
@@ -107,11 +108,48 @@ export default function BakerPage({ params }: { params: Promise<{ id: string }> 
               ))}
             </div>
           </div>
+
+          <div className="listingSection__wrap">
+            <h2 className="text-xl font-semibold">Location & Delivery</h2>
+            <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+              <div className="rounded-xl border border-neutral-200 p-3 dark:border-neutral-700">
+                <p className="text-xs text-neutral-500">Delivery Mode</p>
+                <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1.5 dark:border-neutral-700">
+                  <span className={`h-2.5 w-2.5 rounded-full ${baker.deliveryMode === 'radius' ? 'bg-indigo-500' : 'bg-emerald-500'}`} />
+                  <span className="font-medium">{baker.deliveryMode === 'radius' ? 'Radius Delivery' : 'Area Delivery'}</span>
+                </div>
+                <p className="mt-2 text-xs text-neutral-500">
+                  {baker.deliveryMode === 'radius'
+                    ? `${baker.deliveryRadiusKm || 10} km radius from baker location`
+                    : baker.deliveryAreas.join(', ')}
+                </p>
+              </div>
+              <div className="rounded-xl border border-neutral-200 p-3 dark:border-neutral-700">
+                <p className="text-xs text-neutral-500">Map Preview</p>
+                <div className="mt-2 overflow-hidden rounded-lg">
+                  <DeliveryMap
+                    initialLat={baker.lat}
+                    initialLng={baker.lng}
+                    draggable={false}
+                    showLocateButton={false}
+                    height="h-44"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="grow">
           <div className="sticky top-5">
-            <CakeOrderWidget bakerName={baker.vendorName} />
+            <CakeOrderWidget
+              bakerName={baker.vendorName}
+              vendorLat={baker.lat}
+              vendorLng={baker.lng}
+              vendorDeliveryMode={baker.deliveryMode}
+              vendorDeliveryAreas={baker.deliveryAreas}
+              vendorDeliveryRadiusKm={baker.deliveryRadiusKm}
+            />
           </div>
         </div>
       </main>

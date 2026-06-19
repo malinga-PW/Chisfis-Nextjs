@@ -29,9 +29,22 @@ const TIME_SLOTS = [
 interface Props {
   bakerName?: string
   onOrderSuccess?: () => void
+  vendorLat?: number
+  vendorLng?: number
+  vendorDeliveryMode?: 'areas' | 'radius'
+  vendorDeliveryAreas?: string[]
+  vendorDeliveryRadiusKm?: number
 }
 
-const CakeOrderWidget = ({ bakerName = 'Baker', onOrderSuccess }: Props) => {
+const CakeOrderWidget = ({
+  bakerName = 'Baker',
+  onOrderSuccess,
+  vendorLat = 6.9271,
+  vendorLng = 79.8612,
+  vendorDeliveryMode = 'areas',
+  vendorDeliveryAreas = [],
+  vendorDeliveryRadiusKm = 12,
+}: Props) => {
   const [selectedWeight, setSelectedWeight] = useState(WEIGHT_OPTIONS[0])
   const [selectedDelivery, setSelectedDelivery] = useState(DELIVERY_OPTIONS[0])
   const [deliveryDate, setDeliveryDate] = useState(() => {
@@ -85,6 +98,24 @@ const CakeOrderWidget = ({ bakerName = 'Baker', onOrderSuccess }: Props) => {
             <span className="ml-1 text-base font-normal text-neutral-500 dark:text-neutral-400">/{selectedWeight.label}</span>
           </span>
         </div>
+
+        <div>
+          <h3 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">Vendor Location Preview</h3>
+          <DeliveryMap
+            initialLat={vendorLat}
+            initialLng={vendorLng}
+            draggable={false}
+            showLocateButton={false}
+            height="h-40"
+          />
+          <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+            {vendorDeliveryMode === 'radius'
+              ? `${bakerName} delivers within ${vendorDeliveryRadiusKm} km radius`
+              : `Delivery areas: ${vendorDeliveryAreas.slice(0, 3).join(', ')}${vendorDeliveryAreas.length > 3 ? '...' : ''}`}
+          </p>
+        </div>
+
+        <Divider />
 
         <div>
           <h3 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">Cake Weight</h3>
