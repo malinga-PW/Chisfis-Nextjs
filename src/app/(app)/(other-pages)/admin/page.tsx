@@ -2,6 +2,7 @@
 
 import { Divider } from '@/shared/divider'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
 const MOCK_USER = { role: 'SUPER_ADMIN' }
 
@@ -157,7 +158,7 @@ function SettingsTab() {
   )
 }
 
-export default function AdminPage() {
+function AdminContent() {
   const searchParams = useSearchParams()
   const tab = searchParams.get('tab')
 
@@ -184,5 +185,13 @@ export default function AdminPage() {
         This dashboard is only accessible to platform owners.
       </p>
     </>
+  )
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<div className="py-10 text-center text-neutral-400">Loading dashboard...</div>}>
+      <AdminContent />
+    </Suspense>
   )
 }
