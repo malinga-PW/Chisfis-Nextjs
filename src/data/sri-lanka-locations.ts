@@ -192,6 +192,15 @@ export const SRI_LANKA_LOCATIONS: SriLankaProvince[] = [
           { name: 'Eravur' },
         ],
       },
+      {
+        name: 'Ampara',
+        subAreas: [
+          { name: 'Ampara Town', postalCode: '32000' },
+          { name: 'Kalmunai' },
+          { name: 'Akkaraipattu' },
+          { name: 'Sainthamaruthu' },
+        ],
+      },
     ],
   },
   {
@@ -232,6 +241,100 @@ export const SRI_LANKA_LOCATIONS: SriLankaProvince[] = [
           { name: 'Kegalle Town', postalCode: '71000' },
           { name: 'Mawanella' },
           { name: 'Warakapola' },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'Northern Province',
+    towns: [
+      {
+        name: 'Jaffna',
+        subAreas: [
+          { name: 'Jaffna Town', postalCode: '40000' },
+          { name: 'Nallur' },
+          { name: 'Chavakachcheri' },
+          { name: 'Point Pedro' },
+          { name: 'Kankesanthurai' },
+        ],
+      },
+      {
+        name: 'Kilinochchi',
+        subAreas: [
+          { name: 'Kilinochchi Town', postalCode: '44000' },
+          { name: 'Pallai' },
+          { name: 'Poonakary' },
+        ],
+      },
+      {
+        name: 'Mannar',
+        subAreas: [
+          { name: 'Mannar Town', postalCode: '41000' },
+          { name: 'Murunkan' },
+          { name: 'Pesalai' },
+        ],
+      },
+      {
+        name: 'Mullaitivu',
+        subAreas: [
+          { name: 'Mullaitivu Town', postalCode: '42000' },
+          { name: 'Puthukkudiyiruppu' },
+          { name: 'Oddusuddan' },
+        ],
+      },
+      {
+        name: 'Vavuniya',
+        subAreas: [
+          { name: 'Vavuniya Town', postalCode: '43000' },
+          { name: 'Nedunkeni' },
+          { name: 'Cheddikulam' },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'North Central Province',
+    towns: [
+      {
+        name: 'Anuradhapura',
+        subAreas: [
+          { name: 'Anuradhapura Town', postalCode: '50000' },
+          { name: 'Mihintale' },
+          { name: 'Kekirawa' },
+          { name: 'Medawachchiya' },
+        ],
+      },
+      {
+        name: 'Polonnaruwa',
+        subAreas: [
+          { name: 'Polonnaruwa Town', postalCode: '51000' },
+          { name: 'Kaduruwela' },
+          { name: 'Hingurakgoda' },
+          { name: 'Medirigiriya' },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'Uva Province',
+    towns: [
+      {
+        name: 'Badulla',
+        subAreas: [
+          { name: 'Badulla Town', postalCode: '90000' },
+          { name: 'Bandarawela' },
+          { name: 'Hali-Ela' },
+          { name: 'Ella' },
+          { name: 'Passara' },
+        ],
+      },
+      {
+        name: 'Monaragala',
+        subAreas: [
+          { name: 'Monaragala Town', postalCode: '91000' },
+          { name: 'Wellawaya' },
+          { name: 'Bibile' },
+          { name: 'Kataragama' },
         ],
       },
     ],

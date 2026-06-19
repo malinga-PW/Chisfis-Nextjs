@@ -130,6 +130,8 @@ export default function BakerPage({ params }: { params: Promise<{ id: string }> 
                   <DeliveryMap
                     initialLat={baker.lat}
                     initialLng={baker.lng}
+                    radiusKm={baker.deliveryMode === 'radius' ? baker.deliveryRadiusKm || 10 : undefined}
+                    highlightRadius={baker.deliveryMode === 'radius'}
                     draggable={false}
                     showLocateButton={false}
                     height="h-44"

@@ -104,6 +104,8 @@ const CakeOrderWidget = ({
           <DeliveryMap
             initialLat={vendorLat}
             initialLng={vendorLng}
+            radiusKm={vendorDeliveryMode === 'radius' ? vendorDeliveryRadiusKm : undefined}
+            highlightRadius={vendorDeliveryMode === 'radius'}
             draggable={false}
             showLocateButton={false}
             height="h-40"

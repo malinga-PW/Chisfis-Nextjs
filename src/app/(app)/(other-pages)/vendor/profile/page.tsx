@@ -2,6 +2,7 @@
 
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { DeliveryMap } from '@/components/DeliveryMap'
+import { SRI_LANKA_LOCATIONS } from '@/data/sri-lanka-locations'
 import {
   fetchVendorBusinessEmailInbox,
   fetchVendorBusinessEmailSettings,
@@ -10,7 +11,7 @@ import {
   type VendorBusinessEmailMessage,
 } from '@/lib/supabase/vendorBusinessEmail'
 import { isSupabaseConfigured } from '@/lib/supabase/client'
-import { useRef, useState, useCallback, useEffect } from 'react'
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 
 /* ---------- Types ---------- */
 interface ProductEntry {
@@ -37,6 +38,8 @@ interface VendorProfile {
   deliveryAreas: string[]
   locationAreaName: string
   deliveryRadius: number
+  temporarilyUnavailable: boolean
+  showPhoneWhenUnavailable: boolean
   shortBio: string
   website: string
   instagram: string
@@ -61,18 +64,12 @@ interface VendorProfile {
 type ShowFieldKey = keyof VendorProfile['showFields']
 type TabKey = 'business' | 'products' | 'address' | 'visibility' | 'email'
 
-const AREA_OPTIONS = [
-  'Colombo 01', 'Colombo 02', 'Colombo 03', 'Colombo 04', 'Colombo 05',
-  'Colombo 06', 'Colombo 07', 'Colombo 08', 'Colombo 09', 'Colombo 10',
-  'Athurugiriya', 'Malabe', 'Kaduwela', 'Battaramulla', 'Nugegoda',
-  'Kiribathgoda', 'Kelaniya', 'Wattala', 'Dehiwala', 'Mount Lavinia',
-  'Galle', 'Kandy', 'Negombo', 'Anuradhapura', 'Jaffna', 'Matara',
-]
-
 const CATEGORIES = ['Cakes', 'Cupcakes', 'Pastries', 'Savouries', 'Rice & Curry', 'Short Eats', 'Beverages', 'Desserts', 'Breads', 'Hoppers']
 
 const LOGO_FALLBACK = (name: string) =>
   `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=FF6B35&color=fff&size=256&bold=true&format=png`
+
+const INITIAL_EMAIL_SAMPLE_TIME = new Date(Date.now() - 3600 * 1000).toISOString()
 
 const DEFAULT_PROFILE: VendorProfile = {
   businessName: 'Nimru Cakes with Love',
@@ -89,6 +86,8 @@ const DEFAULT_PROFILE: VendorProfile = {
   deliveryAreas: ['Athurugiriya', 'Malabe', 'Kaduwela', 'Colombo 05'],
   locationAreaName: '',
   deliveryRadius: 10,
+  temporarilyUnavailable: false,
+  showPhoneWhenUnavailable: true,
   shortBio: 'Handcrafted cakes made with love since 2015. Specialising in wedding, birthday and custom design cakes.',
   website: '',
   instagram: '',
@@ -305,14 +304,44 @@ export default function VendorProfilePage() {
       sender: 'orders@newmarket.lk',
       subject: 'New order notification integration',
       preview: 'Connect this inbox with your order events to receive instant updates.',
-      receivedAt: new Date(Date.now() - 3600 * 1000).toISOString(),
+      receivedAt: INITIAL_EMAIL_SAMPLE_TIME,
       isRead: true,
     },
   ])
 
   const [newProduct, setNewProduct] = useState<ProductEntry>({ id: '', title: '', description: '', category: 'Cakes', price: 0, images: [] })
   const [editingProductId, setEditingProductId] = useState<string | null>(null)
+  const [areaSearch, setAreaSearch] = useState('')
   const productImagesRef = useRef<HTMLInputElement>(null)
+
+  const deliveryAreaGroups = useMemo(() => {
+    const query = areaSearch.trim().toLowerCase()
+
+    return SRI_LANKA_LOCATIONS
+      .map((province) => {
+        const towns = province.towns
+          .map((town) => ({
+            name: town.name,
+            subAreas: town.subAreas
+              .map((subArea) => subArea.name)
+              .filter((subAreaName) => {
+                if (!query) return true
+                return (
+                  subAreaName.toLowerCase().includes(query)
+                  || town.name.toLowerCase().includes(query)
+                  || province.name.toLowerCase().includes(query)
+                )
+              }),
+          }))
+          .filter((town) => town.subAreas.length > 0)
+
+        return {
+          name: province.name,
+          towns,
+        }
+      })
+      .filter((province) => province.towns.length > 0)
+  }, [areaSearch])
 
   useEffect(() => {
     let mounted = true
@@ -940,6 +969,9 @@ export default function VendorProfilePage() {
                 <div className="mt-5">
                   <DeliveryMap
                     height="h-72"
+                    selectionMode="center"
+                    radiusKm={profile.deliveryMethod === 'radius' ? profile.deliveryRadius : undefined}
+                    highlightRadius={profile.deliveryMethod === 'radius'}
                     onLocationChange={(lat, lng) => setProfile((p) => ({ ...p, location: { lat, lng } }))}
                   />
                   <div className="mt-2 flex items-center gap-2 rounded-lg bg-neutral-50 px-3 py-2 dark:bg-neutral-800">
@@ -947,7 +979,7 @@ export default function VendorProfilePage() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                     </svg>
                     <p className="text-xs text-neutral-400">
-                      Drag the pin to set your exact location · Lat: {profile.location.lat.toFixed(5)}, Lng: {profile.location.lng.toFixed(5)}
+                      Keep the pin centered and move the map to set exact location · Lat: {profile.location.lat.toFixed(5)}, Lng: {profile.location.lng.toFixed(5)}
                     </p>
                   </div>
                 </div>
@@ -1008,31 +1040,64 @@ export default function VendorProfilePage() {
                 {profile.deliveryMethod === 'areas' && (
                   <div className="mt-5">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium">Select Delivery Areas</label>
+                      <label className="text-sm font-medium">Select Delivery Areas (Province -&gt; Cities)</label>
                       <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium dark:bg-neutral-800">
                         {profile.deliveryAreas.length} selected
                       </span>
                     </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {AREA_OPTIONS.map((area) => {
-                        const sel = profile.deliveryAreas.includes(area)
-                        return (
-                          <button
-                            key={area}
-                            type="button"
-                            onClick={() => toggleDeliveryArea(area)}
-                            className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-150 active:scale-95 ${
-                              sel
-                                ? 'bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900'
-                                : 'border border-neutral-200 text-neutral-600 hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800'
-                            }`}
-                          >
-                            {sel && <span className="mr-1">✓</span>}
-                            {area}
-                          </button>
-                        )
-                      })}
+
+                    <div className="mt-3">
+                      <label className="text-xs font-medium text-neutral-500">Search city / area / province</label>
+                      <input
+                        type="text"
+                        value={areaSearch}
+                        onChange={(e) => setAreaSearch(e.target.value)}
+                        placeholder="Type to filter locations"
+                        className="mt-1.5 w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:focus:ring-neutral-100"
+                      />
                     </div>
+
+                    <div className="mt-3 max-h-[420px] space-y-3 overflow-y-auto pr-1">
+                      {deliveryAreaGroups.map((province) => (
+                        <div key={province.name} className="rounded-xl border border-neutral-200 p-3 dark:border-neutral-700">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">{province.name}</p>
+                          <div className="mt-2 space-y-3">
+                            {province.towns.map((town) => (
+                              <div key={`${province.name}-${town.name}`}>
+                                <p className="text-[11px] font-medium text-neutral-500">{town.name}</p>
+                                <div className="mt-1.5 flex flex-wrap gap-2">
+                                  {town.subAreas.map((area) => {
+                                    const sel = profile.deliveryAreas.includes(area)
+                                    return (
+                                      <button
+                                        key={`${province.name}-${town.name}-${area}`}
+                                        type="button"
+                                        onClick={() => toggleDeliveryArea(area)}
+                                        className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-150 active:scale-95 ${
+                                          sel
+                                            ? 'bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900'
+                                            : 'border border-neutral-200 text-neutral-600 hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800'
+                                        }`}
+                                      >
+                                        {sel && <span className="mr-1">✓</span>}
+                                        {area}
+                                      </button>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {deliveryAreaGroups.length === 0 && (
+                      <p className="mt-3 rounded-xl bg-neutral-50 px-4 py-2.5 text-sm text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
+                        No locations found for {areaSearch}.
+                      </p>
+                    )}
+
                     {profile.deliveryAreas.length > 0 && (
                       <div className="mt-4 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800">
                         <p className="text-xs font-medium text-neutral-500">Selected Areas:</p>
@@ -1085,6 +1150,43 @@ export default function VendorProfilePage() {
                     </p>
                   </div>
                 )}
+
+                <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900/40 dark:bg-amber-900/10">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-sm font-semibold">Seller Availability</h3>
+                      <p className="text-xs text-neutral-500">Pause orders temporarily and choose whether to keep contact visible.</p>
+                    </div>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${profile.temporarilyUnavailable ? 'bg-amber-200 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'}`}>
+                      {profile.temporarilyUnavailable ? 'Temporarily Unavailable' : 'Available for Orders'}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setProfile((p) => ({ ...p, temporarilyUnavailable: !p.temporarilyUnavailable }))}
+                    className={`mt-3 w-full rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${profile.temporarilyUnavailable ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-amber-600 text-white hover:bg-amber-700'}`}
+                  >
+                    {profile.temporarilyUnavailable ? 'Mark as Available Now' : 'Set as Temporarily Unavailable'}
+                  </button>
+
+                  {profile.temporarilyUnavailable && (
+                    <div className="mt-3 space-y-3">
+                      <ToggleSwitch
+                        checked={profile.showPhoneWhenUnavailable}
+                        onChange={() => setProfile((p) => ({ ...p, showPhoneWhenUnavailable: !p.showPhoneWhenUnavailable }))}
+                        label="Show contact number while unavailable"
+                        description={profile.showPhoneWhenUnavailable ? 'Customers can still call for urgent requests' : 'Contact number stays hidden until you become available'}
+                      />
+                      <p className="rounded-lg bg-white px-3 py-2 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                        Customer preview: Temporarily unavailable for new orders.
+                        {profile.showPhoneWhenUnavailable && profile.showFields.phone && profile.phone.trim()
+                          ? ` Contact: ${profile.phone}`
+                          : ' Contact number hidden.'}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
