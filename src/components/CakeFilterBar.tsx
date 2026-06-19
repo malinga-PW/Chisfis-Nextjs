@@ -1,7 +1,7 @@
 'use client'
 
 import { PriceRangeSlider } from '@/components/PriceRangeSlider'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { useRef, useState } from 'react'
 
 export interface FilterState {
@@ -14,6 +14,7 @@ export interface FilterState {
 interface Props {
   allAreas: string[]
   onChange: (filters: FilterState) => void
+  floating?: boolean
 }
 
 const SORT_OPTIONS = [
@@ -30,11 +31,13 @@ function HoverDropdown({
   icon,
   children,
   align = 'left',
+  className = '',
 }: {
   label: string
   icon?: React.ReactNode
   children: React.ReactNode
   align?: 'left' | 'right'
+  className?: string
 }) {
   const [open, setOpen] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -49,15 +52,15 @@ function HoverDropdown({
   }
 
   return (
-    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <button className="flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800">
+    <div className={`relative ${className}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <button className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white/90 px-4 py-2 text-sm font-medium text-neutral-700 backdrop-blur-sm hover:bg-white hover:shadow-sm dark:border-neutral-700 dark:bg-neutral-800/90 dark:text-neutral-300 dark:hover:bg-neutral-800">
         {icon}
         {label}
         <ChevronDownIcon className="h-3.5 w-3.5 text-neutral-400" />
       </button>
       {open && (
         <div
-          className={`absolute z-50 mt-2 w-48 rounded-xl bg-white p-2 shadow-lg ring-1 ring-black/5 dark:bg-neutral-800 ${
+          className={`absolute z-50 mt-2 w-48 rounded-xl bg-white/95 p-2 shadow-lg ring-1 ring-black/5 backdrop-blur-md dark:bg-neutral-800/95 ${
             align === 'right' ? 'right-0' : 'left-0'
           }`}
           onMouseEnter={handleMouseEnter}
@@ -70,7 +73,7 @@ function HoverDropdown({
   )
 }
 
-export default function CakeFilterBar({ allAreas, onChange }: Props) {
+export default function CakeFilterBar({ allAreas, onChange, floating = false }: Props) {
   const [filters, setFilters] = useState<FilterState>({
     area: 'All',
     sortBy: 'popular',
@@ -91,26 +94,40 @@ export default function CakeFilterBar({ allAreas, onChange }: Props) {
     filters.priceRange[0] !== 1000 || filters.priceRange[1] !== 25000,
   ].filter(Boolean).length
 
-  return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
+  const bar = (
+    <div
+      className={`rounded-2xl border p-4 shadow-sm ${
+        floating
+          ? 'border-white/40 bg-white/80 shadow-lg backdrop-blur-xl dark:border-neutral-700/40 dark:bg-neutral-900/80'
+          : 'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900'
+      }`}
+    >
       <div className="flex flex-wrap items-center gap-3">
-        {/* Left group: location pills + sort + rating */}
+        {/* Left group: location dropdown + sort + rating */}
         <div className="flex flex-wrap items-center gap-2">
-          {allAreas.map((area) => (
-            <button
-              key={area}
-              onClick={() => update({ area })}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                filters.area === area
-                  ? 'bg-neutral-900 text-white shadow dark:bg-neutral-100 dark:text-neutral-900'
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
-              }`}
-            >
-              {area}
-            </button>
-          ))}
+          {/* Location - Dropdown */}
+          <HoverDropdown
+            label={filters.area}
+            icon={<MapPinIcon className="h-4 w-4 text-neutral-500" />}
+          >
+            <div className="max-h-56 overflow-y-auto space-y-0.5">
+              {allAreas.map((area) => (
+                <button
+                  key={area}
+                  onClick={() => update({ area })}
+                  className={`flex w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                    filters.area === area
+                      ? 'bg-neutral-100 font-medium text-neutral-900 dark:bg-neutral-700 dark:text-white'
+                      : 'text-neutral-600 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-700'
+                  }`}
+                >
+                  {area}
+                </button>
+              ))}
+            </div>
+          </HoverDropdown>
 
-          {/* Sort By - Hover Dropdown */}
+          {/* Sort By */}
           <HoverDropdown
             label={SORT_OPTIONS.find((o) => o.value === filters.sortBy)?.label || 'Sort'}
             icon={
@@ -134,7 +151,7 @@ export default function CakeFilterBar({ allAreas, onChange }: Props) {
             ))}
           </HoverDropdown>
 
-          {/* Rating Filter - Hover Dropdown */}
+          {/* Rating */}
           <HoverDropdown
             label={filters.minRating > 0 ? `${filters.minRating}+` : 'Rating'}
             icon={
@@ -167,7 +184,7 @@ export default function CakeFilterBar({ allAreas, onChange }: Props) {
             ))}
           </HoverDropdown>
 
-          {/* Clear button */}
+          {/* Clear */}
           {activeFilterCount > 0 && (
             <button
               onClick={() => update({ area: 'All', sortBy: 'popular', minRating: 0, priceRange: [1000, 25000] })}
@@ -178,12 +195,14 @@ export default function CakeFilterBar({ allAreas, onChange }: Props) {
           )}
         </div>
 
-        {/* Right: Price Slider - directly on the bar */}
-        <div className="ml-auto flex items-center gap-3 rounded-xl bg-neutral-50 px-4 py-2 dark:bg-neutral-800">
-          <svg className="h-4 w-4 text-neutral-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        {/* Right: Price Slider */}
+        <div className={`ml-auto flex items-center gap-3 rounded-xl px-4 py-2 ${
+          floating ? 'bg-white/70 dark:bg-neutral-800/70' : 'bg-neutral-50 dark:bg-neutral-800'
+        }`}>
+          <svg className="h-4 w-4 shrink-0 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
           </svg>
-          <span className="shrink-0 text-sm font-medium text-neutral-700 dark:text-neutral-300 w-28 tabular-nums">
+          <span className="w-28 shrink-0 text-sm font-medium tabular-nums text-neutral-700 dark:text-neutral-300">
             LKR {filters.priceRange[0].toLocaleString()} - {filters.priceRange[1].toLocaleString()}
           </span>
           <div className="w-28">
@@ -226,4 +245,14 @@ export default function CakeFilterBar({ allAreas, onChange }: Props) {
       )}
     </div>
   )
+
+  if (floating) {
+    return (
+      <div className="sticky top-4 z-30 -mx-2 px-2">
+        {bar}
+      </div>
+    )
+  }
+
+  return bar
 }

@@ -19,7 +19,7 @@ import { Divider } from '@/shared/divider'
 import Heading from '@/shared/Heading'
 import { useState, useMemo } from 'react'
 
-const ALL_AREAS = ['All', 'Colombo 03', 'Colombo 07', 'Nugegoda', 'Dehiwala', 'Maharagama']
+const ALL_AREAS = ['All', 'Athurugiriya', 'Kiribathgoda', 'Rajanganaya', 'Mulleriyawa', 'Malabe', 'Colombo']
 
 const heroImage = {
   src: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=80',
@@ -96,7 +96,7 @@ function Page() {
           </Heading>
 
           <div className="mt-8">
-            <CakeFilterBar allAreas={ALL_AREAS} onChange={setFilters} />
+            <CakeFilterBar allAreas={ALL_AREAS} onChange={setFilters} floating />
           </div>
 
           <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 md:gap-x-8 md:gap-y-14 lg:grid-cols-3 xl:grid-cols-3">

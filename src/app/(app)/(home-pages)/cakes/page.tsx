@@ -9,7 +9,7 @@ import { DEMO_CAKES_DATA } from '@/data/cakes'
 import type { TCakeListing } from '@/data/cakes'
 import { useState, useMemo } from 'react'
 
-const ALL_AREAS = ['All', 'Colombo 03', 'Colombo 07', 'Nugegoda', 'Dehiwala', 'Maharagama']
+const ALL_AREAS = ['All', 'Athurugiriya', 'Kiribathgoda', 'Rajanganaya', 'Mulleriyawa', 'Malabe', 'Colombo']
 
 function filterCakes(cakes: TCakeListing[], filters: FilterState): TCakeListing[] {
   let result = [...cakes]
@@ -84,7 +84,7 @@ function CakesPage() {
 
           {/* Advanced Filter Bar */}
           <div className="mt-8">
-            <CakeFilterBar allAreas={ALL_AREAS} onChange={setFilters} />
+            <CakeFilterBar allAreas={ALL_AREAS} onChange={setFilters} floating />
           </div>
 
           {/* Grid */}
