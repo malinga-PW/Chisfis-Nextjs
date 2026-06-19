@@ -8,16 +8,25 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function SignupPage() {
-  const { login } = useAuth()
+  const { signup } = useAuth()
   const router = useRouter()
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await login(email, password)
-    router.push('/')
+    setError('')
+    setBusy(true)
+    const err = await signup(phone, password, name, 'BUYER')
+    if (err) {
+      setError(err)
+      setBusy(false)
+    } else {
+      router.push('/')
+    }
   }
 
   return (
@@ -33,14 +42,15 @@ export default function SignupPage() {
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" required className="mt-1 w-full rounded-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
           </div>
           <div>
-            <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Email address</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="example@example.com" required className="mt-1 w-full rounded-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
+            <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Phone Number</label>
+            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+94 XX XXX XXXX" required className="mt-1 w-full rounded-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
           </div>
           <div>
             <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Password</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" required className="mt-1 w-full rounded-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
           </div>
-          <ButtonPrimary type="submit">Continue</ButtonPrimary>
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          <ButtonPrimary type="submit" disabled={busy}>{busy ? 'Creating account...' : 'Continue'}</ButtonPrimary>
         </form>
         <div className="block text-center text-sm text-neutral-700 dark:text-neutral-300">
           Already have an account?{' '}

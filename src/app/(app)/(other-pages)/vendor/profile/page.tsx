@@ -2,6 +2,7 @@
 
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { DeliveryMap } from '@/components/DeliveryMap'
+import { useAuth } from '@/contexts/AuthContext'
 import { SRI_LANKA_LOCATIONS } from '@/data/sri-lanka-locations'
 import {
   fetchVendorBusinessEmailInbox,
@@ -69,30 +70,28 @@ const CATEGORIES = ['Cakes', 'Cupcakes', 'Pastries', 'Savouries', 'Rice & Curry'
 const LOGO_FALLBACK = (name: string) =>
   `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=FF6B35&color=fff&size=256&bold=true&format=png`
 
-const INITIAL_EMAIL_SAMPLE_TIME = new Date(Date.now() - 3600 * 1000).toISOString()
-
-const DEFAULT_PROFILE: VendorProfile = {
-  businessName: 'Nimru Cakes with Love',
-  logo: LOGO_FALLBACK('Nimru'),
-  ownerName: 'Nimru',
-  ownerPhoto: 'https://ui-avatars.com/api/?name=Nimru&background=6B7280&color=fff&size=256&bold=true&format=png',
-  email: 'baker@example.com',
-  phone: '+94 71 234 5678',
-  whatsapp: '+94 71 234 5678',
-  whatsappAvailable: true,
-  address: 'No. 123, Main Street, Athurugiriya',
+const EMPTY_PROFILE = (uid: string): VendorProfile => ({
+  businessName: '',
+  logo: null,
+  ownerName: '',
+  ownerPhoto: null,
+  email: '',
+  phone: '',
+  whatsapp: '',
+  whatsappAvailable: false,
+  address: '',
   location: { lat: 6.9271, lng: 79.8612 },
   deliveryMethod: 'areas',
-  deliveryAreas: ['Athurugiriya', 'Malabe', 'Kaduwela', 'Colombo 05'],
+  deliveryAreas: [],
   locationAreaName: '',
   deliveryRadius: 10,
   temporarilyUnavailable: false,
   showPhoneWhenUnavailable: true,
-  shortBio: 'Handcrafted cakes made with love since 2015. Specialising in wedding, birthday and custom design cakes.',
+  shortBio: '',
   website: '',
   instagram: '',
   facebook: '',
-  businessEmailLocalPart: 'nimrucakes',
+  businessEmailLocalPart: '',
   businessEmailDomain: 'hostlanka.online',
   businessEmailForwarding: '',
   businessEmailNotifications: true,
@@ -106,11 +105,8 @@ const DEFAULT_PROFILE: VendorProfile = {
     website: false,
     socialMedia: false,
   },
-  products: [
-    { id: 'p1', title: 'Classic Vanilla Wedding Cake', description: '3-tier elegant vanilla sponge with buttercream frosting', category: 'Cakes', price: 15000, images: [] },
-    { id: 'p2', title: 'Chocolate Fudge Birthday', description: 'Rich chocolate fudge with ganache drip', category: 'Cakes', price: 6800, images: [] },
-  ],
-}
+  products: [],
+})
 
 /* -------- Sub-components -------- */
 
@@ -283,31 +279,14 @@ const TAB_ITEMS: { key: TabKey; label: string; icon: string }[] = [
    MAIN COMPONENT
    ========================================= */
 export default function VendorProfilePage() {
-  const [profile, setProfile] = useState<VendorProfile>(DEFAULT_PROFILE)
+  const { user } = useAuth()
+  const uid = user?.id ?? ''
+  const [profile, setProfile] = useState<VendorProfile>(EMPTY_PROFILE(uid))
   const [activeTab, setActiveTab] = useState<TabKey>('business')
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
   const [emailSyncStatus, setEmailSyncStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
-  const [inbox, setInbox] = useState<VendorBusinessEmailMessage[]>([
-    {
-      id: 'm1',
-      vendorId: 'u2',
-      sender: 'HostLanka Billing',
-      subject: 'Welcome to HostLanka Business Mail',
-      preview: 'Your mailbox is active. You can start receiving emails now.',
-      receivedAt: new Date().toISOString(),
-      isRead: false,
-    },
-    {
-      id: 'm2',
-      vendorId: 'u2',
-      sender: 'orders@newmarket.lk',
-      subject: 'New order notification integration',
-      preview: 'Connect this inbox with your order events to receive instant updates.',
-      receivedAt: INITIAL_EMAIL_SAMPLE_TIME,
-      isRead: true,
-    },
-  ])
+  const [inbox, setInbox] = useState<VendorBusinessEmailMessage[]>([])
 
   const [newProduct, setNewProduct] = useState<ProductEntry>({ id: '', title: '', description: '', category: 'Cakes', price: 0, images: [] })
   const [editingProductId, setEditingProductId] = useState<string | null>(null)
@@ -345,7 +324,7 @@ export default function VendorProfilePage() {
 
   useEffect(() => {
     let mounted = true
-    const vendorId = 'u2'
+    const vendorId = uid
 
     const loadBusinessEmail = async () => {
       if (!isSupabaseConfigured) return
@@ -377,7 +356,7 @@ export default function VendorProfilePage() {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [uid])
 
   /* ------ Handlers ------ */
   const handleSave = async () => {
@@ -385,7 +364,7 @@ export default function VendorProfilePage() {
     if (isSupabaseConfigured) {
       try {
         await upsertVendorBusinessEmailSettings({
-          vendorId: 'u2',
+          vendorId: uid,
           localPart: profile.businessEmailLocalPart,
           domain: profile.businessEmailDomain,
           forwardingEmail: profile.businessEmailForwarding,

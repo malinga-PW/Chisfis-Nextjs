@@ -1,6 +1,14 @@
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import {
+  signUpWithPhone,
+  signInWithPhone,
+  signOut as supabaseSignOut,
+  getSessionUser,
+  onAuthStateChange,
+  type AuthUser,
+} from '@/lib/supabase/auth'
 
 export type UserRole = 'BUYER' | 'SELLER' | 'SUPER_ADMIN'
 
@@ -14,41 +22,65 @@ export interface User {
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string) => Promise<void>
+  login: (phone: string, password: string) => Promise<void>
+  signup: (phone: string, password: string, name: string, role: UserRole) => Promise<string | null>
   logout: () => void
   switchRole: (role: UserRole) => void
   isAuthenticated: boolean
-}
-
-const DEMO_USERS: Record<string, User> = {
-  buyer: { id: 'u1', name: 'Eden Smith', email: 'eden@example.com', role: 'BUYER' },
-  seller: { id: 'u2', name: 'Nimru Cakes', email: 'baker@example.com', role: 'SELLER' },
-  admin: { id: 'u3', name: 'Admin Nimru', email: 'admin@nimru.com', role: 'SUPER_ADMIN' },
+  loading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
+function mapAuthUser(u: AuthUser): User {
+  return {
+    id: u.id,
+    name: u.name,
+    email: u.phone,
+    role: u.role,
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(DEMO_USERS.buyer)
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const login = async (email: string, _password: string) => {
-    const found = Object.values(DEMO_USERS).find((u) => u.email === email)
-    if (found) {
-      setUser(found)
-    } else {
-      setUser({ id: 'u-new', name: email.split('@')[0], email, role: 'BUYER' })
-    }
+  useEffect(() => {
+    getSessionUser().then((u) => {
+      if (u) setUser(mapAuthUser(u))
+      setLoading(false)
+    })
+  }, [])
+
+  useEffect(() => {
+    const unsub = onAuthStateChange((u) => {
+      setUser(u ? mapAuthUser(u) : null)
+    })
+    return unsub
+  }, [])
+
+  const login = async (phone: string, password: string) => {
+    const { user: au, error } = await signInWithPhone(phone, password)
+    if (error || !au) throw new Error(error ?? 'Login failed')
+    setUser(mapAuthUser(au))
   }
 
-  const logout = () => setUser(null)
-
-  const switchRole = (role: UserRole) => {
-    const match = Object.values(DEMO_USERS).find((u) => u.role === role)
-    if (match) setUser(match)
+  const signup = async (phone: string, password: string, name: string, role: UserRole): Promise<string | null> => {
+    const { user: au, error } = await signUpWithPhone(phone, password, { name, role })
+    if (error) return error
+    if (au) setUser(mapAuthUser(au))
+    return null
   }
+
+  const logout = async () => {
+    await supabaseSignOut()
+    setUser(null)
+  }
+
+  const switchRole = (_role: UserRole) => {}
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, switchRole, isAuthenticated: user !== null }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, switchRole, isAuthenticated: user !== null, loading }}>
       {children}
     </AuthContext.Provider>
   )

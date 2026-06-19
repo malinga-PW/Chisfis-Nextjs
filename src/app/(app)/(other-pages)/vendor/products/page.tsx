@@ -24,39 +24,6 @@ type ProductForm = Omit<CakeProduct, 'id'>
 const CATEGORIES = ['Birthday', 'Wedding', 'Anniversary', 'Corporate', 'Custom Design', 'Cupcakes', 'Desserts', 'Savouries']
 const WEIGHT_OPTIONS = ['500g', '1kg', '2kg', '3kg', '5kg']
 
-const INITIAL_PRODUCTS: CakeProduct[] = [
-  {
-    id: 'p1',
-    title: 'Classic Vanilla Wedding Cake',
-    category: 'Wedding',
-    price: 15000,
-    weights: ['3kg', '5kg'],
-    image: '',
-    salesCount: 42,
-    ongoingOrders: 5,
-    totalValue: 630000,
-    commentsCount: 28,
-    asksCount: 9,
-    lastComment: 'Great design and taste! Delivered on time.',
-    lastAsk: 'Can this be made eggless for Sunday?',
-  },
-  {
-    id: 'p2',
-    title: 'Chocolate Fudge Birthday Cake',
-    category: 'Birthday',
-    price: 6800,
-    weights: ['1kg', '2kg', '3kg'],
-    image: '',
-    salesCount: 75,
-    ongoingOrders: 8,
-    totalValue: 510000,
-    commentsCount: 43,
-    asksCount: 16,
-    lastComment: 'Kids loved this chocolate flavor.',
-    lastAsk: 'Available for same-day pickup?',
-  },
-]
-
 const EMPTY_FORM: ProductForm = {
   title: '',
   category: 'Birthday',
@@ -73,7 +40,7 @@ const EMPTY_FORM: ProductForm = {
 }
 
 export default function VendorProductsPage() {
-  const [products, setProducts] = useState<CakeProduct[]>(INITIAL_PRODUCTS)
+  const [products, setProducts] = useState<CakeProduct[]>([])
   const [activeEditorId, setActiveEditorId] = useState<string | 'new' | null>(null)
   const [draft, setDraft] = useState<ProductForm>(EMPTY_FORM)
   const [imagePreview, setImagePreview] = useState<string | null>(null)

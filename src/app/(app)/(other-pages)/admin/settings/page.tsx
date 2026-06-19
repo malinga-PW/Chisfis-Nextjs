@@ -12,17 +12,8 @@ interface Setting {
   value: string | boolean
 }
 
-const DEFAULT_SETTINGS: Setting[] = [
-  { key: 'maintenance', label: 'Maintenance Mode', desc: 'Disable public access during updates', type: 'toggle', value: false },
-  { key: 'vendor_approval', label: 'New Vendor Approvals', desc: 'Require admin approval for new sellers', type: 'toggle', value: true },
-  { key: 'commission_rate', label: 'Commission Rate', desc: 'Platform fee on each order (%)', type: 'number', value: '5' },
-  { key: 'default_currency', label: 'Default Currency', desc: 'Display currency for all listings', type: 'text', value: 'LKR' },
-  { key: 'delivery_fee', label: 'Base Delivery Fee', desc: 'Default delivery fee (LKR)', type: 'number', value: '350' },
-  { key: 'max_delivery_km', label: 'Max Delivery Radius', desc: 'Maximum delivery distance (km)', type: 'number', value: '50' },
-]
-
 export default function AdminSettingsPage() {
-  const [settings, setSettings] = useState<Setting[]>(DEFAULT_SETTINGS)
+  const [settings, setSettings] = useState<Setting[]>([])
   const [saved, setSaved] = useState(false)
 
   const updateSetting = (key: string, val: string | boolean) => {

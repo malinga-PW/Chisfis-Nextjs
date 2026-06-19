@@ -62,9 +62,6 @@ interface BuyerProfile {
   joined: string
 }
 
-const avatar = (name: string, bg = 'FF6B35') =>
-  `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bg}&color=fff&size=256&bold=true&format=png`
-
 const AREA_OPTIONS = [
   'Athurugiriya',
   'Malabe',
@@ -82,73 +79,9 @@ const AREA_OPTIONS = [
 
 const CATEGORY_OPTIONS = ['Cakes', 'Cupcakes', 'Desserts', 'Savouries', 'Rice & Curry', 'Short Eats']
 
-const makeVendor = (
-  id: string,
-  businessName: string,
-  owner: string,
-  email: string,
-  location: string,
-  phone: string,
-  status: 'Pending' | 'Approved' | 'Rejected',
-  submitted: string,
-): VendorRequest => ({
-  id,
-  businessName,
-  owner,
-  email,
-  location,
-  phone,
-  logo: avatar(businessName),
-  ownerPhoto: avatar(owner, '64748B'),
-  whatsappNumber: phone,
-  whatsappAvailable: true,
-  address: `${location}, Sri Lanka`,
-  lat: 6.9271,
-  lng: 79.8612,
-  deliveryMode: 'areas',
-  deliveryAreas: [location, 'Colombo 05'],
-  deliveryRadiusKm: 12,
-  visibility: {
-    ownerName: true,
-    phone: true,
-    address: true,
-    deliveryInfo: true,
-    whatsapp: true,
-  },
-  products: [
-    {
-      id: `${id}-p1`,
-      title: 'Signature Item',
-      description: 'Freshly prepared daily with premium ingredients.',
-      category: 'Desserts',
-      price: 3500,
-      media: null,
-    },
-  ],
-  improvementNotes: '',
-  status,
-  submitted,
-})
-
-const INITIAL_VENDORS: VendorRequest[] = [
-  makeVendor('v1', 'Nimru Cakes with Love', 'Nimru', 'nimru@example.com', 'Athurugiriya', '+94 71 234 5678', 'Approved', '2026-06-01'),
-  makeVendor('v2', 'KCCT Cakes', 'Kumari', 'kcct@example.com', 'Kiribathgoda', '+94 77 345 6789', 'Approved', '2026-06-05'),
-  makeVendor('v3', 'Kavi Happy Cakes', 'Kavindi', 'kavi@example.com', 'Rajanganaya', '+94 76 456 7890', 'Pending', '2026-06-12'),
-  makeVendor('v4', 'Perera & Sons - Mulleriyawa', 'Saman Perera', 'perera@example.com', 'Mulleriyawa', '+94 71 567 8901', 'Pending', '2026-06-15'),
-  makeVendor('v5', 'Perera & Sons - Malabe', 'Saman Perera', 'perera.m@example.com', 'Malabe', '+94 71 678 9012', 'Pending', '2026-06-16'),
-]
-
-const INITIAL_BUYERS: BuyerProfile[] = [
-  { id: 'b1', name: 'Eden Smith', email: 'eden@example.com', phone: '+94 77 123 4567', orders: 3, joined: '2026-01-15' },
-  { id: 'b2', name: 'John Doe', email: 'john@example.com', phone: '+94 71 234 5678', orders: 1, joined: '2026-03-20' },
-  { id: 'b3', name: 'Jane Miller', email: 'jane@example.com', phone: '+94 76 345 6789', orders: 5, joined: '2025-11-08' },
-  { id: 'b4', name: 'Alice Perera', email: 'alice@example.com', phone: '+94 77 456 7890', orders: 0, joined: '2026-06-14' },
-  { id: 'b5', name: 'Nimal Fernando', email: 'nimal@example.com', phone: '+94 71 567 8901', orders: 2, joined: '2026-05-20' },
-]
-
 export default function AdminUsersPage() {
-  const [vendors, setVendors] = useState<VendorRequest[]>(INITIAL_VENDORS)
-  const [buyers, setBuyers] = useState<BuyerProfile[]>(INITIAL_BUYERS)
+  const [vendors, setVendors] = useState<VendorRequest[]>([])
+  const [buyers, setBuyers] = useState<BuyerProfile[]>([])
   const [tab, setTab] = useState<'vendors' | 'buyers'>('vendors')
   const [editingVendorId, setEditingVendorId] = useState<string | null>(null)
   const [vendorForm, setVendorForm] = useState<VendorRequest | null>(null)
@@ -172,7 +105,7 @@ export default function AdminUsersPage() {
     const loadFromSupabase = async () => {
       if (!isSupabaseConfigured) {
         setSyncState('idle')
-        setSyncMessage('Supabase not configured. Using local demo data.')
+        setSyncMessage('Supabase not configured.')
         return
       }
 
@@ -192,7 +125,7 @@ export default function AdminUsersPage() {
       } catch (_error) {
         if (!mounted) return
         setSyncState('error')
-        setSyncMessage('Supabase load failed. Falling back to local demo data.')
+        setSyncMessage('Supabase load failed.')
       }
     }
 

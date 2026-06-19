@@ -12,10 +12,11 @@ interface Props {
 }
 
 export default function ProtectedRoute({ children, roles, fallback = '/' }: Props) {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
+    if (loading) return
     if (!isAuthenticated) {
       router.push('/login')
       return
@@ -23,8 +24,9 @@ export default function ProtectedRoute({ children, roles, fallback = '/' }: Prop
     if (roles && user && !roles.includes(user.role)) {
       router.push(fallback)
     }
-  }, [isAuthenticated, user, roles, router, fallback])
+  }, [loading, isAuthenticated, user, roles, router, fallback])
 
+  if (loading) return <div className="flex min-h-screen items-center justify-center text-sm text-neutral-500">Loading...</div>
   if (!isAuthenticated) return null
   if (roles && user && !roles.includes(user.role)) return null
 
