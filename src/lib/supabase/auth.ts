@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from './client'
+import { getSupabaseClient, isSupabaseConfigured } from './client'
 
 export interface AuthUser {
   id: string
@@ -25,6 +25,10 @@ function adminLogin(phone: string, password: string): { user: AuthUser | null; e
   }
 }
 
+function sb() {
+  return getSupabaseClient()
+}
+
 export async function signUpWithPhone(
   phone: string,
   password: string,
@@ -34,11 +38,12 @@ export async function signUpWithPhone(
     return { user: null, error: 'This password is reserved for admin login' }
   }
 
-  if (!isSupabaseConfigured || !supabase) {
+  const client = sb()
+  if (!client) {
     return { user: null, error: 'Supabase not configured' }
   }
 
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await client.auth.signUp({
     phone,
     password,
     options: { data: { name: metadata.name, role: metadata.role } },
@@ -62,16 +67,16 @@ export async function signInWithPhone(
   phone: string,
   password: string,
 ): Promise<{ user: AuthUser | null; error: string | null }> {
-  // Super admin login bypass
   if (password === ADMIN_PASSWORD) {
     return adminLogin(phone, password)
   }
 
-  if (!isSupabaseConfigured || !supabase) {
-    return { user: null, error: 'Supabase not configured' }
+  const client = sb()
+  if (!client) {
+    return { user: null, error: 'Supabase not configured - check .env.local' }
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({ phone, password })
+  const { data, error } = await client.auth.signInWithPassword({ phone, password })
   if (error) return { user: null, error: error.message }
   if (!data.user) return { user: null, error: 'Login failed' }
 
@@ -88,14 +93,16 @@ export async function signInWithPhone(
 }
 
 export async function signOut(): Promise<void> {
-  if (!isSupabaseConfigured || !supabase) return
-  await supabase.auth.signOut()
+  const client = sb()
+  if (!client) return
+  await client.auth.signOut()
 }
 
 export async function getSessionUser(): Promise<AuthUser | null> {
-  if (!isSupabaseConfigured || !supabase) return null
+  const client = sb()
+  if (!client) return null
 
-  const { data } = await supabase.auth.getSession()
+  const { data } = await client.auth.getSession()
   if (!data.session?.user) return null
 
   const u = data.session.user
@@ -109,11 +116,12 @@ export async function getSessionUser(): Promise<AuthUser | null> {
 }
 
 export function onAuthStateChange(cb: (user: AuthUser | null) => void): () => void {
-  if (!isSupabaseConfigured || !supabase) {
+  const client = sb()
+  if (!client) {
     return () => {}
   }
 
-  const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
+  const { data: subscription } = client.auth.onAuthStateChange(async (_event, session) => {
     if (!session?.user) {
       cb(null)
       return

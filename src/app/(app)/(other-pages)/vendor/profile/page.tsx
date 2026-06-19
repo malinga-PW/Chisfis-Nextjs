@@ -327,7 +327,7 @@ export default function VendorProfilePage() {
     const vendorId = uid
 
     const loadBusinessEmail = async () => {
-      if (!isSupabaseConfigured) return
+      if (!isSupabaseConfigured()) return
       try {
         setEmailSyncStatus('loading')
         const [settings, messages] = await Promise.all([
@@ -361,7 +361,7 @@ export default function VendorProfilePage() {
   /* ------ Handlers ------ */
   const handleSave = async () => {
     setSaving(true)
-    if (isSupabaseConfigured) {
+    if (isSupabaseConfigured()) {
       try {
         await upsertVendorBusinessEmailSettings({
           vendorId: uid,
@@ -436,7 +436,7 @@ export default function VendorProfilePage() {
 
   const markMessageRead = async (messageId: string) => {
     setInbox((prev) => prev.map((m) => (m.id === messageId ? { ...m, isRead: true } : m)))
-    if (!isSupabaseConfigured) return
+    if (!isSupabaseConfigured()) return
     try {
       await markVendorBusinessEmailAsRead(messageId)
     } catch (_error) {

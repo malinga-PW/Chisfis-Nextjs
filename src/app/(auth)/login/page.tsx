@@ -18,10 +18,14 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    await doLogin(phone, password)
+  }
+
+  const doLogin = async (p: string, pw: string) => {
     setError('')
     setBusy(true)
     try {
-      await login(phone, password)
+      await login(p, pw)
       router.push('/')
     } catch (err: any) {
       setError(err.message ?? 'Login failed')
@@ -61,7 +65,7 @@ export default function LoginPage() {
           <Link href="/vendor-register" className="font-medium text-neutral-900 underline dark:text-white">Register as a Baker</Link>
         </div>
         <div className="border-t border-neutral-200 pt-4 text-center dark:border-neutral-700">
-          <p className="text-xs text-neutral-400">Super Admin? <button type="button" onClick={() => { setPhone('Admin'); setPassword('Admin@hostlanka'); setTimeout(() => formRef.current?.requestSubmit(), 50) }} className="font-medium text-neutral-900 underline dark:text-white">Click here to sign in</button></p>
+          <p className="text-xs text-neutral-400">Super Admin? <button type="button" onClick={() => doLogin('Admin', 'Admin@hostlanka')} className="font-medium text-neutral-900 underline dark:text-white">Click here to sign in</button></p>
         </div>
       </div>
     </div>

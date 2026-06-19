@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from '@/lib/supabase/client'
+import { getSupabaseClient } from '@/lib/supabase/client'
 
 export interface VendorBusinessEmailSettings {
   vendorId: string
@@ -44,9 +44,14 @@ const mapMessageFromDb = (row: any): VendorBusinessEmailMessage => ({
   isRead: Boolean(row.is_read),
 })
 
+function c() {
+  return getSupabaseClient()
+}
+
 export async function fetchVendorBusinessEmailSettings(vendorId: string): Promise<VendorBusinessEmailSettings | null> {
-  if (!isSupabaseConfigured || !supabase) return null
-  const { data, error } = await supabase
+  const cl = c()
+  if (!cl) return null
+  const { data, error } = await cl
     .from('hl_vendor_business_email_accounts')
     .select('*')
     .eq('vendor_id', vendorId)
@@ -57,16 +62,18 @@ export async function fetchVendorBusinessEmailSettings(vendorId: string): Promis
 }
 
 export async function upsertVendorBusinessEmailSettings(settings: VendorBusinessEmailSettings): Promise<void> {
-  if (!isSupabaseConfigured || !supabase) return
-  const { error } = await supabase
+  const cl = c()
+  if (!cl) return
+  const { error } = await cl
     .from('hl_vendor_business_email_accounts')
     .upsert(mapSettingsToDb(settings), { onConflict: 'vendor_id' })
   if (error) throw error
 }
 
 export async function fetchVendorBusinessEmailInbox(vendorId: string): Promise<VendorBusinessEmailMessage[] | null> {
-  if (!isSupabaseConfigured || !supabase) return null
-  const { data, error } = await supabase
+  const cl = c()
+  if (!cl) return null
+  const { data, error } = await cl
     .from('hl_vendor_business_email_messages')
     .select('*')
     .eq('vendor_id', vendorId)
@@ -77,8 +84,9 @@ export async function fetchVendorBusinessEmailInbox(vendorId: string): Promise<V
 }
 
 export async function markVendorBusinessEmailAsRead(messageId: string): Promise<void> {
-  if (!isSupabaseConfigured || !supabase) return
-  const { error } = await supabase
+  const cl = c()
+  if (!cl) return
+  const { error } = await cl
     .from('hl_vendor_business_email_messages')
     .update({ is_read: true })
     .eq('id', messageId)

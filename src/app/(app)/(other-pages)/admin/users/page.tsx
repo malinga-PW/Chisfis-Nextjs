@@ -103,7 +103,7 @@ export default function AdminUsersPage() {
     let mounted = true
 
     const loadFromSupabase = async () => {
-      if (!isSupabaseConfigured) {
+      if (!isSupabaseConfigured()) {
         setSyncState('idle')
         setSyncMessage('Supabase not configured.')
         return
@@ -137,7 +137,7 @@ export default function AdminUsersPage() {
 
   const updateStatus = async (id: string, status: 'Approved' | 'Rejected') => {
     setVendors((prev) => prev.map((v) => v.id === id ? { ...v, status } : v))
-    if (!isSupabaseConfigured) return
+    if (!isSupabaseConfigured()) return
     try {
       setSyncState('saving')
       setSyncMessage('Saving status to Supabase...')
@@ -167,7 +167,7 @@ export default function AdminUsersPage() {
   const saveVendor = async () => {
     if (!editingVendorId || !vendorForm) return
     setVendors((prev) => prev.map((v) => (v.id === editingVendorId ? vendorForm : v)))
-    if (isSupabaseConfigured) {
+    if (isSupabaseConfigured()) {
       try {
         setSyncState('saving')
         setSyncMessage('Saving vendor to Supabase...')
@@ -195,7 +195,7 @@ export default function AdminUsersPage() {
   const saveBuyer = async () => {
     if (!editingBuyerId || !buyerForm) return
     setBuyers((prev) => prev.map((b) => (b.id === editingBuyerId ? buyerForm : b)))
-    if (isSupabaseConfigured) {
+    if (isSupabaseConfigured()) {
       try {
         setSyncState('saving')
         setSyncMessage('Saving buyer to Supabase...')

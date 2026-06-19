@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from '@/lib/supabase/client'
+import { getSupabaseClient, isSupabaseConfigured } from '@/lib/supabase/client'
 
 export interface VendorProductRecord {
   id: string
@@ -124,23 +124,30 @@ const mapBuyerToDb = (buyer: BuyerRecord) => ({
   joined_at: buyer.joined,
 })
 
+function client() {
+  return getSupabaseClient()
+}
+
 export async function fetchVendorsFromSupabase(): Promise<VendorRecord[] | null> {
-  if (!isSupabaseConfigured || !supabase) return null
-  const { data, error } = await supabase.from('hl_vendors').select('*').order('submitted_at', { ascending: false })
+  const c = client()
+  if (!c) return null
+  const { data, error } = await c.from('hl_vendors').select('*').order('submitted_at', { ascending: false })
   if (error) throw error
   return (data ?? []).map(mapVendorFromDb)
 }
 
 export async function fetchBuyersFromSupabase(): Promise<BuyerRecord[] | null> {
-  if (!isSupabaseConfigured || !supabase) return null
-  const { data, error } = await supabase.from('hl_buyers').select('*').order('joined_at', { ascending: false })
+  const c = client()
+  if (!c) return null
+  const { data, error } = await c.from('hl_buyers').select('*').order('joined_at', { ascending: false })
   if (error) throw error
   return (data ?? []).map(mapBuyerFromDb)
 }
 
 export async function upsertVendorToSupabase(vendor: VendorRecord): Promise<void> {
-  if (!isSupabaseConfigured || !supabase) return
-  const { error } = await supabase.from('hl_vendors').upsert(mapVendorToDb(vendor), { onConflict: 'id' })
+  const c = client()
+  if (!c) return
+  const { error } = await c.from('hl_vendors').upsert(mapVendorToDb(vendor), { onConflict: 'id' })
   if (error) throw error
 }
 
@@ -148,13 +155,15 @@ export async function updateVendorStatusInSupabase(
   id: string,
   status: 'Approved' | 'Rejected',
 ): Promise<void> {
-  if (!isSupabaseConfigured || !supabase) return
-  const { error } = await supabase.from('hl_vendors').update({ status }).eq('id', id)
+  const c = client()
+  if (!c) return
+  const { error } = await c.from('hl_vendors').update({ status }).eq('id', id)
   if (error) throw error
 }
 
 export async function upsertBuyerToSupabase(buyer: BuyerRecord): Promise<void> {
-  if (!isSupabaseConfigured || !supabase) return
-  const { error } = await supabase.from('hl_buyers').upsert(mapBuyerToDb(buyer), { onConflict: 'id' })
+  const c = client()
+  if (!c) return
+  const { error } = await c.from('hl_buyers').upsert(mapBuyerToDb(buyer), { onConflict: 'id' })
   if (error) throw error
 }
