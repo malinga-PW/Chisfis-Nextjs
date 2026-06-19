@@ -1,4 +1,5 @@
 import { ButtonSubmit } from './ButtonSubmit'
+import { CakeTypeSelectField } from './CakeTypeSelectField'
 import { ClearDataButton } from './ClearDataButton'
 import { DateRangeField } from './DateRangeField'
 import { GuestNumberField } from './GuestNumberField'
@@ -10,6 +11,7 @@ import { TimePickerField } from './TimePickerField'
 
 export {
   ButtonSubmit,
+  CakeTypeSelectField,
   ClearDataButton,
   DateRangeField,
   GuestNumberField,

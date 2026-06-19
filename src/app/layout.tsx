@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@/components/theme-provider'
 import { DirectionProvider } from '@/components/ui/direction'
+import { NotificationProvider } from '@/contexts/NotificationContext'
 import { cn } from '@/lib/utils'
 import '@/styles/tailwind.css'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             dir={process.env.NEXT_PUBLIC_THEME_DIR || 'ltr'}
             direction={process.env.NEXT_PUBLIC_THEME_DIR || 'ltr'}
           >
+            <NotificationProvider>
             <div>
               {children}
               <SpeedInsights />
@@ -49,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {/* For Chisfis's demo  -- you can remove it  */}
               <CustomizeControl />
             </div>
+            </NotificationProvider>
           </DirectionProvider>
         </ThemeProvider>
       </body>

@@ -28,7 +28,7 @@ const CakeCard: FC<CakeCardProps> = ({ className = '', data }) => {
           sizes="(max-width: 1025px) 100vw, 25vw"
         />
       </div>
-      <Link href={'/cakes'} className="space-y-4 p-4">
+      <Link href={`/baker/${id}`} className="space-y-4 p-4">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Badge color="orange">{vendorName}</Badge>

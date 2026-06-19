@@ -13,7 +13,7 @@ import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTimeoutFn } from 'react-use'
-import { DateRangeField, LocationInputField, TimePickerField } from '../HeroSearchForm/ui'
+import { CakeTypeSelectField, DateRangeField, LocationInputField, TimePickerField } from '../HeroSearchForm/ui'
 
 const HeroSearchFormMobile = ({ className }: { className?: string }) => {
   const router = useRouter()
@@ -21,6 +21,7 @@ const HeroSearchFormMobile = ({ className }: { className?: string }) => {
   let [, , resetIsShowingDialog] = useTimeoutFn(() => setShowDialog(true), 1)
   const [showDialog, setShowDialog] = useState(false)
   const [deliveryTime, setDeliveryTime] = useState('10:00 AM')
+  const [cakeType, setCakeType] = useState('All Types')
 
   function closeModal() {
     setShowModal(false)
@@ -86,6 +87,7 @@ const HeroSearchFormMobile = ({ className }: { className?: string }) => {
 
                   <div className="flex-1 space-y-6 pt-16">
                     <LocationInputField fieldStyle="default" />
+                    <CakeTypeSelectField fieldStyle="default" value={cakeType} onChange={setCakeType} />
                     <DateRangeField fieldStyle="default" isOnlySingleDate />
                     <TimePickerField fieldStyle="default" value={deliveryTime} onChange={setDeliveryTime} />
                   </div>

@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { ButtonSubmit, DateRangeField, LocationInputField, TimePickerField } from './ui'
+import { ButtonSubmit, CakeTypeSelectField, DateRangeField, LocationInputField, TimePickerField } from './ui'
 
 interface Props {
   className?: string
@@ -14,6 +14,7 @@ interface Props {
 export const CakeSearchForm = ({ className, formStyle = 'default' }: Props) => {
   const router = useRouter()
   const [deliveryTime, setDeliveryTime] = useState('10:00 AM')
+  const [cakeType, setCakeType] = useState('All Types')
 
   const handleFormSubmit = (formData: FormData) => {
     const formDataEntries = Object.fromEntries(formData.entries())
@@ -21,6 +22,9 @@ export const CakeSearchForm = ({ className, formStyle = 'default' }: Props) => {
     let url = '/cakes'
     if (location) {
       url = url + `?location=${encodeURIComponent(location)}`
+    }
+    if (cakeType && cakeType !== 'All Types') {
+      url = url + (location ? '&' : '?') + `type=${encodeURIComponent(cakeType)}`
     }
     router.push(url)
   }
@@ -36,6 +40,12 @@ export const CakeSearchForm = ({ className, formStyle = 'default' }: Props) => {
       action={handleFormSubmit}
     >
       <LocationInputField className="hero-search-form__field-after flex-1" fieldStyle={formStyle} />
+      <CakeTypeSelectField
+        className="hero-search-form__field-before hero-search-form__field-after flex-1"
+        fieldStyle={formStyle}
+        value={cakeType}
+        onChange={setCakeType}
+      />
       <DateRangeField
         className="hero-search-form__field-before hero-search-form__field-after flex-1"
         fieldStyle={formStyle}
