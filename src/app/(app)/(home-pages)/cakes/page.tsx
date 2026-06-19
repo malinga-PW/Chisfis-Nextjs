@@ -2,19 +2,55 @@
 
 import BgGlassmorphism from '@/components/BgGlassmorphism'
 import CakeCard from '@/components/CakeCard'
+import CakeFilterBar from '@/components/CakeFilterBar'
+import type { FilterState } from '@/components/CakeFilterBar'
 import HeadingWithSub from '@/shared/Heading'
 import { DEMO_CAKES_DATA } from '@/data/cakes'
-import { useState } from 'react'
+import type { TCakeListing } from '@/data/cakes'
+import { useState, useMemo } from 'react'
 
 const ALL_AREAS = ['All', 'Colombo 03', 'Colombo 07', 'Nugegoda', 'Dehiwala', 'Maharagama']
 
-function CakesPage() {
-  const [activeArea, setActiveArea] = useState('All')
+function filterCakes(cakes: TCakeListing[], filters: FilterState): TCakeListing[] {
+  let result = [...cakes]
 
-  const filtered =
-    activeArea === 'All'
-      ? DEMO_CAKES_DATA
-      : DEMO_CAKES_DATA.filter((c) => c.deliveryAreas.includes(activeArea))
+  if (filters.area !== 'All') {
+    result = result.filter((c) => c.deliveryAreas.includes(filters.area))
+  }
+
+  if (filters.minRating > 0) {
+    result = result.filter((c) => c.rating >= filters.minRating)
+  }
+
+  result = result.filter((c) => c.price >= filters.priceRange[0] && c.price <= filters.priceRange[1])
+
+  switch (filters.sortBy) {
+    case 'popular':
+      result.sort((a, b) => b.reviewsCount - a.reviewsCount)
+      break
+    case 'price-low':
+      result.sort((a, b) => a.price - b.price)
+      break
+    case 'price-high':
+      result.sort((a, b) => b.price - a.price)
+      break
+    case 'latest':
+    default:
+      break
+  }
+
+  return result
+}
+
+function CakesPage() {
+  const [filters, setFilters] = useState<FilterState>({
+    area: 'All',
+    sortBy: 'popular',
+    minRating: 0,
+    priceRange: [1000, 25000],
+  })
+
+  const filteredCakes = useMemo(() => filterCakes(DEMO_CAKES_DATA, filters), [filters])
 
   return (
     <main className="relative overflow-hidden">
@@ -46,28 +82,22 @@ function CakesPage() {
             Popular Bakers in Your Area
           </HeadingWithSub>
 
-          {/* Area Filter */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-            {ALL_AREAS.map((area) => (
-              <button
-                key={area}
-                onClick={() => setActiveArea(area)}
-                className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
-                  activeArea === area
-                    ? 'bg-neutral-900 text-white shadow-lg dark:bg-neutral-100 dark:text-neutral-900'
-                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
-                }`}
-              >
-                {area}
-              </button>
-            ))}
+          {/* Advanced Filter Bar */}
+          <div className="mt-8">
+            <CakeFilterBar allAreas={ALL_AREAS} onChange={setFilters} />
           </div>
 
           {/* Grid */}
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:gap-x-8 md:gap-y-14 lg:grid-cols-3 xl:grid-cols-3">
-            {filtered.map((cake) => (
-              <CakeCard key={cake.id} data={cake} />
-            ))}
+            {filteredCakes.length > 0 ? (
+              filteredCakes.map((cake) => (
+                <CakeCard key={cake.id} data={cake} />
+              ))
+            ) : (
+              <div className="col-span-full py-20 text-center text-neutral-500">
+                No cakes match your filters. Try adjusting your criteria.
+              </div>
+            )}
           </div>
         </div>
       </div>

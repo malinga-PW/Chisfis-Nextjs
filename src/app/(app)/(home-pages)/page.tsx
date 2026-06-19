@@ -1,6 +1,10 @@
+'use client'
+
 import BackgroundSection from '@/components/BackgroundSection'
 import BgGlassmorphism from '@/components/BgGlassmorphism'
 import CakeCard from '@/components/CakeCard'
+import CakeFilterBar from '@/components/CakeFilterBar'
+import type { FilterState } from '@/components/CakeFilterBar'
 import HeroSectionWithSearchForm1 from '@/components/hero-sections/HeroSectionWithSearchForm1'
 import HeroSearchForm from '@/components/HeroSearchForm/HeroSearchForm'
 import SectionBecomeAnAuthor from '@/components/SectionBecomeAnAuthor'
@@ -9,15 +13,13 @@ import SectionHowItWork from '@/components/SectionHowItWork'
 import SectionOurFeatures from '@/components/SectionOurFeatures'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
 import { DEMO_CAKES_DATA } from '@/data/cakes'
+import type { TCakeListing } from '@/data/cakes'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import { Divider } from '@/shared/divider'
 import Heading from '@/shared/Heading'
-import { Metadata } from 'next'
+import { useState, useMemo } from 'react'
 
-export const metadata: Metadata = {
-  title: 'Custom Cakes Marketplace',
-  description: 'Find the perfect custom cake in your area',
-}
+const ALL_AREAS = ['All', 'Colombo 03', 'Colombo 07', 'Nugegoda', 'Dehiwala', 'Maharagama']
 
 const heroImage = {
   src: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=80',
@@ -25,7 +27,47 @@ const heroImage = {
   height: 900,
 }
 
-async function Page() {
+function filterCakes(cakes: TCakeListing[], filters: FilterState): TCakeListing[] {
+  let result = [...cakes]
+
+  if (filters.area !== 'All') {
+    result = result.filter((c) => c.deliveryAreas.includes(filters.area))
+  }
+
+  if (filters.minRating > 0) {
+    result = result.filter((c) => c.rating >= filters.minRating)
+  }
+
+  result = result.filter((c) => c.price >= filters.priceRange[0] && c.price <= filters.priceRange[1])
+
+  switch (filters.sortBy) {
+    case 'popular':
+      result.sort((a, b) => b.reviewsCount - a.reviewsCount)
+      break
+    case 'price-low':
+      result.sort((a, b) => a.price - b.price)
+      break
+    case 'price-high':
+      result.sort((a, b) => b.price - a.price)
+      break
+    case 'latest':
+    default:
+      break
+  }
+
+  return result
+}
+
+function Page() {
+  const [filters, setFilters] = useState<FilterState>({
+    area: 'All',
+    sortBy: 'popular',
+    minRating: 0,
+    priceRange: [1000, 25000],
+  })
+
+  const filteredCakes = useMemo(() => filterCakes(DEMO_CAKES_DATA, filters), [filters])
+
   return (
     <main className="relative overflow-hidden">
       <BgGlassmorphism />
@@ -52,11 +94,17 @@ async function Page() {
           <Heading subheading="Hand-picked cake vendors selected for you.">
             Featured Cake Bakers
           </Heading>
-          <div className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 md:gap-x-8 md:gap-y-14 lg:grid-cols-3 xl:grid-cols-3">
-            {DEMO_CAKES_DATA.map((cake) => (
+
+          <div className="mt-8">
+            <CakeFilterBar allAreas={ALL_AREAS} onChange={setFilters} />
+          </div>
+
+          <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 md:gap-x-8 md:gap-y-14 lg:grid-cols-3 xl:grid-cols-3">
+            {filteredCakes.map((cake) => (
               <CakeCard key={cake.id} data={cake} />
             ))}
           </div>
+
           <div className="mt-16 flex items-center justify-center">
             <ButtonPrimary href={'/cakes'}>
               View all bakers

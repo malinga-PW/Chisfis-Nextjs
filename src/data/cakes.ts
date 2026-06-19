@@ -10,12 +10,42 @@ export interface TCakeListing {
   rating: number
   reviewsCount: number
   featuredImage: string
+  gallery: string[]
   categories: string[]
   specialties: string[]
   isEgglessAvailable: boolean
   isGlutenFreeAvailable: boolean
   isHalalCertified: boolean
   minOrderNotice: string
+}
+
+const IMG = {
+  wedding: 'https://images.unsplash.com/photo-1535254973040-607b474cb50d?auto=format&fit=crop&w=800&q=80',
+  chocolate: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80',
+  colorful: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80',
+  cupcakes: 'https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?auto=format&fit=crop&w=800&q=80',
+  cream: 'https://images.unsplash.com/photo-1486427944544-d2c246c4e0c6?auto=format&fit=crop&w=800&q=80',
+  designer: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=800&q=80',
+  berries: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80',
+  fruit: 'https://images.unsplash.com/photo-1509365465985-25d11c1e4c6a?auto=format&fit=crop&w=800&q=80',
+  slice: 'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?auto=format&fit=crop&w=800&q=80',
+  pink: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a5c?auto=format&fit=crop&w=800&q=80',
+  macarons: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80',
+  donuts: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=800&q=80',
+  tiered: 'https://images.unsplash.com/photo-1555274175-6cbf6c6c1b0a?auto=format&fit=crop&w=800&q=80',
+  scoop: 'https://images.unsplash.com/photo-1560008581-09826d1de69e?auto=format&fit=crop&w=800&q=80',
+}
+
+const ALL_IMAGES = Object.values(IMG)
+
+function pickGallery(excludeIndex: number): string[] {
+  const pool = ALL_IMAGES.filter((_, i) => i !== excludeIndex)
+  const shuffled = [...pool].sort(() => Math.random() - 0.5)
+  return [ALL_IMAGES[excludeIndex], ...shuffled.slice(0, 4)]
+}
+
+function buildGallery(idx: number): string[] {
+  return pickGallery(idx % ALL_IMAGES.length)
 }
 
 export const DEMO_CAKES_DATA: TCakeListing[] = [
@@ -30,7 +60,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 12000,
     rating: 4.9,
     reviewsCount: 89,
-    featuredImage: 'https://images.unsplash.com/photo-1535254973040-607b474cb50d?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.wedding,
+    gallery: buildGallery(0),
     categories: ['Wedding Cakes', 'Birthday Cakes', 'Custom Design'],
     specialties: ['Fondant', 'Sugar Flowers', 'Tiered Cakes'],
     isEgglessAvailable: true,
@@ -49,7 +80,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 3200,
     rating: 4.7,
     reviewsCount: 203,
-    featuredImage: 'https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.cupcakes,
+    gallery: buildGallery(1),
     categories: ['Cupcakes', 'Desserts', 'Custom Orders'],
     specialties: ['Buttercream', 'Whipped Cream', 'Mini Cakes'],
     isEgglessAvailable: true,
@@ -68,7 +100,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 4800,
     rating: 4.6,
     reviewsCount: 156,
-    featuredImage: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.colorful,
+    gallery: buildGallery(2),
     categories: ['Traditional Cakes', 'Fruit Cakes', 'Birthday Cakes'],
     specialties: ['Sri Lankan Love Cake', 'Bolo Fiado', 'Biscuit Pudding'],
     isEgglessAvailable: false,
@@ -87,7 +120,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 3800,
     rating: 4.5,
     reviewsCount: 218,
-    featuredImage: 'https://images.unsplash.com/photo-1486427944544-d2c246c4e0c6?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.cream,
+    gallery: buildGallery(3),
     categories: ['Cream Cakes', 'Pastries', 'Celebration Cakes'],
     specialties: ['Fresh Cream', 'Chocolate Ganache', 'Fruit Toppings'],
     isEgglessAvailable: true,
@@ -106,7 +140,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 9500,
     rating: 4.9,
     reviewsCount: 67,
-    featuredImage: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.designer,
+    gallery: buildGallery(4),
     categories: ['Designer Cakes', 'Macarons', 'French Pastries'],
     specialties: ['Macaron Towers', 'Drip Cakes', 'Mirror Glaze'],
     isEgglessAvailable: false,
@@ -125,7 +160,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 5500,
     rating: 4.4,
     reviewsCount: 132,
-    featuredImage: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.berries,
+    gallery: buildGallery(5),
     categories: ['Themed Cakes', 'Cupcakes', 'Kids Party Cakes'],
     specialties: ['Photo Cakes', 'Cartoon Themes', 'Pull-apart Cupcakes'],
     isEgglessAvailable: true,
@@ -144,7 +180,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 4200,
     rating: 4.8,
     reviewsCount: 95,
-    featuredImage: 'https://images.unsplash.com/photo-1509365465985-25d11c1e4c6a?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.fruit,
+    gallery: buildGallery(6),
     categories: ['Eggless Cakes', 'Traditional Bakes', 'Fruit Cakes'],
     specialties: ['Eggless Chocolate', 'Cashew Cake', 'Jaffna Style Bakes'],
     isEgglessAvailable: true,
@@ -163,7 +200,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 6800,
     rating: 4.6,
     reviewsCount: 78,
-    featuredImage: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.chocolate,
+    gallery: buildGallery(7),
     categories: ['Chocolate Cakes', 'Celebration Cakes', 'Custom Design'],
     specialties: ['Belgian Chocolate', 'Molten Lava', 'Truffle Cakes'],
     isEgglessAvailable: true,
@@ -182,7 +220,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 3600,
     rating: 4.7,
     reviewsCount: 54,
-    featuredImage: 'https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.pink,
+    gallery: buildGallery(8),
     categories: ['Fruit Cakes', 'Coconut Cakes', 'Vegan Options'],
     specialties: ['King Coconut Cake', 'Mango Mousse', 'Passion Fruit Tarts'],
     isEgglessAvailable: true,
@@ -201,7 +240,8 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
     price: 2900,
     rating: 4.5,
     reviewsCount: 189,
-    featuredImage: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80',
+    featuredImage: IMG.slice,
+    gallery: buildGallery(9),
     categories: ['Home-style Cakes', 'Party Cakes', 'Simple Bakes'],
     specialties: ['Vanilla Sponge', 'Chocolate Chip', 'Caramel Drip'],
     isEgglessAvailable: false,
