@@ -1,5 +1,7 @@
 'use client'
 
+import { useAuth } from '@/contexts/AuthContext'
+import type { UserRole } from '@/contexts/AuthContext'
 import avatarImage from '@/images/avatars/Image-1.png'
 import Avatar from '@/shared/Avatar'
 import { Divider } from '@/shared/divider'
@@ -17,28 +19,28 @@ import {
   UserIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useState } from 'react'
-
-type UserRole = 'customer' | 'baker' | 'admin'
 
 interface Props {
   className?: string
 }
 
 const ROLE_LABELS: Record<UserRole, string> = {
-  customer: 'Customer',
-  baker: 'Baker',
-  admin: 'Admin',
+  BUYER: 'Customer',
+  SELLER: 'Baker',
+  SUPER_ADMIN: 'Admin',
 }
 
 export default function AvatarDropdown({ className }: Props) {
-  const [role, setRole] = useState<UserRole>('customer')
+  const { user, switchRole, logout } = useAuth()
+  if (!user) return null
+
+  const role = user.role
 
   return (
     <div className={className}>
       <Popover>
         <PopoverButton className="-m-1.5 flex cursor-pointer items-center justify-center rounded-full p-1.5 hover:bg-neutral-100 focus-visible:outline-hidden dark:hover:bg-neutral-800">
-          <Avatar src={avatarImage.src} className="size-8" />
+          <Avatar src={user.avatar || avatarImage.src} className="size-8" />
         </PopoverButton>
 
         <PopoverPanel
@@ -51,19 +53,19 @@ export default function AvatarDropdown({ className }: Props) {
         >
           <div className="relative grid grid-cols-1 gap-6 bg-white px-6 py-7 dark:bg-neutral-800">
             <div className="flex items-center space-x-3">
-              <Avatar src={avatarImage.src} className="size-12" />
+              <Avatar src={user.avatar || avatarImage.src} className="size-12" />
               <div className="grow">
-                <h4 className="font-semibold">Eden Smith</h4>
-                <p className="mt-0.5 text-xs text-neutral-500">Los Angeles, CA</p>
+                <h4 className="font-semibold">{user.name}</h4>
+                <p className="mt-0.5 text-xs text-neutral-500">{user.email}</p>
               </div>
             </div>
 
             {/* Role Switcher */}
             <div className="flex gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-700">
-              {(['customer', 'baker', 'admin'] as UserRole[]).map((r) => (
+              {(['BUYER', 'SELLER', 'SUPER_ADMIN'] as UserRole[]).map((r) => (
                 <button
                   key={r}
-                  onClick={() => setRole(r)}
+                  onClick={() => switchRole(r)}
                   className={`flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
                     role === r
                       ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-600 dark:text-white'
@@ -77,10 +79,10 @@ export default function AvatarDropdown({ className }: Props) {
 
             <Divider />
 
-            {/* Customer Section */}
-            {role === 'customer' && (
+            {/* Customer / BUYER links */}
+            {role === 'BUYER' && (
               <>
-                <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/user/orders" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={UserIcon} size={24} strokeWidth={1.5} />
                   </div>
@@ -92,13 +94,7 @@ export default function AvatarDropdown({ className }: Props) {
                   </div>
                   <p className="ms-4 text-sm font-medium">Cart</p>
                 </Link>
-                <Link href="/account-savelists" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                  <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <HugeiconsIcon icon={FavouriteIcon} size={24} strokeWidth={1.5} />
-                  </div>
-                  <p className="ms-4 text-sm font-medium">Wishlist</p>
-                </Link>
-                <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/user/settings" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={Task01Icon} size={24} strokeWidth={1.5} />
                   </div>
@@ -107,28 +103,28 @@ export default function AvatarDropdown({ className }: Props) {
               </>
             )}
 
-            {/* Baker Section */}
-            {role === 'baker' && (
+            {/* Seller / SELLER links */}
+            {role === 'SELLER' && (
               <>
-                <Link href="/authors/john-doe" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/vendor/dashboard" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={UserIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Vendor Dashboard</p>
                 </Link>
-                <Link href="/authors/john-doe" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/vendor/products" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={Task01Icon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Manage Products</p>
                 </Link>
-                <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/vendor/orders" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={FavouriteIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">View Orders</p>
                 </Link>
-                <Link href="/account-billing" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/vendor/dashboard" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={Award04Icon} size={24} strokeWidth={1.5} />
                   </div>
@@ -137,22 +133,22 @@ export default function AvatarDropdown({ className }: Props) {
               </>
             )}
 
-            {/* Admin Section */}
-            {role === 'admin' && (
+            {/* Admin / SUPER_ADMIN links */}
+            {role === 'SUPER_ADMIN' && (
               <>
-                <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/admin/dashboard" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={UserIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Platform Dashboard</p>
                 </Link>
-                <Link href="/cakes" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/admin/users" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={Task01Icon} size={24} strokeWidth={1.5} />
                   </div>
-                  <p className="ms-4 text-sm font-medium">Manage Bakers</p>
+                  <p className="ms-4 text-sm font-medium">Manage Users</p>
                 </Link>
-                <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                <Link href="/admin/settings" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={FavouriteIcon} size={24} strokeWidth={1.5} />
                   </div>
@@ -180,12 +176,12 @@ export default function AvatarDropdown({ className }: Props) {
               <p className="ms-4 text-sm font-medium">Help</p>
             </Link>
 
-            <Link href="#" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+            <button onClick={logout} className="-m-3 flex w-full items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
               <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                 <HugeiconsIcon icon={Logout01Icon} size={24} strokeWidth={1.5} />
               </div>
-              <p className="ms-4 text-sm font-medium">Log out</p>
-            </Link>
+              <p className="ms-4 text-sm font-medium text-left">Log out</p>
+            </button>
           </div>
         </PopoverPanel>
       </Popover>

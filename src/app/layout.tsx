@@ -1,3 +1,4 @@
+import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { DirectionProvider } from '@/components/ui/direction'
 import { NotificationProvider } from '@/contexts/NotificationContext'
@@ -13,20 +14,11 @@ const poppins = Poppins({ subsets: ['latin'], variable: '--font-sans', weight: [
 
 export const metadata: Metadata = {
   title: {
-    template: '%s - Chisfis',
-    default: 'Chisfis - Travel & Hotel Booking Next.js Template',
+    template: '%s - Nimru Cakes',
+    default: 'Nimru Cakes - Custom Cake Marketplace',
   },
-  description: 'Travel, Hotel, Car Rental, Flight, Experiences, Real Estate, Tour Next.js Template',
-  keywords: [
-    'Travel & Hotel Booking',
-    'Car Rental',
-    'Next.js Template',
-    'Flight Booking',
-    'Experiences',
-    'Real Estate',
-    'Tour',
-    'Guide',
-  ],
+  description: 'Find the perfect custom cake for every occasion. Multi-vendor cake marketplace connecting you with the best local bakers.',
+  keywords: ['Custom Cakes', 'Cake Marketplace', 'Birthday Cakes', 'Wedding Cakes', 'Bakery', 'Sri Lanka', 'Order Cake Online'],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -43,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             dir={process.env.NEXT_PUBLIC_THEME_DIR || 'ltr'}
             direction={process.env.NEXT_PUBLIC_THEME_DIR || 'ltr'}
           >
+            <AuthProvider>
             <NotificationProvider>
             <div>
               {children}
@@ -52,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CustomizeControl />
             </div>
             </NotificationProvider>
+            </AuthProvider>
           </DirectionProvider>
         </ThemeProvider>
       </body>

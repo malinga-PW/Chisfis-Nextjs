@@ -14,27 +14,27 @@ const navigation: {
   }[]
 } = {
   solutions: [
-    { name: 'Marketing', href: '#' },
-    { name: 'Analytics', href: '#' },
-    { name: 'Automation', href: '#' },
-    { name: 'Commerce', href: '#' },
+    { name: 'All Cakes', href: '/cakes' },
+    { name: 'Birthday Cakes', href: '/cakes' },
+    { name: 'Wedding Cakes', href: '/cakes' },
+    { name: 'Custom Design', href: '/cakes' },
   ],
   support: [
-    { name: 'Submit ticket', href: '#' },
-    { name: 'Documentation', href: '#' },
-    { name: 'Guides', href: '#' },
+    { name: 'Contact Us', href: '/' },
+    { name: 'FAQs', href: '/' },
+    { name: 'Delivery Info', href: '/checkout' },
   ],
   company: [
-    { name: 'About', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Jobs', href: '#' },
-    { name: 'Press', href: '#' },
+    { name: 'About Us', href: '/' },
+    { name: 'For Bakers', href: '/vendor/register' },
+    { name: 'Careers', href: '/' },
+    { name: 'Press', href: '/' },
   ],
   legal: [
-    { name: 'Terms of service', href: '#' },
-    { name: 'Privacy policy', href: '#' },
-    { name: 'License', href: '#' },
-    { name: 'Insights', href: '#' },
+    { name: 'Terms of Service', href: '/' },
+    { name: 'Privacy Policy', href: '/' },
+    { name: 'Cookie Policy', href: '/' },
+    { name: 'License', href: '/' },
   ],
   social: [
     {
@@ -177,7 +177,7 @@ export default function Footer2() {
         </div>
         <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24 dark:border-gray-700">
           <p className="text-sm/6 text-gray-600 dark:text-neutral-400">
-            &copy; 2026 Your Company, Inc. All rights reserved.
+            &copy; 2026 Nimru Cakes. All rights reserved.
           </p>
         </div>
       </div>
