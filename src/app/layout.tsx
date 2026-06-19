@@ -2,6 +2,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { DirectionProvider } from '@/components/ui/direction'
 import { NotificationProvider } from '@/contexts/NotificationContext'
+import FloatingActions from '@/components/FloatingActions'
 import { cn } from '@/lib/utils'
 import '@/styles/tailwind.css'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -14,11 +15,11 @@ const poppins = Poppins({ subsets: ['latin'], variable: '--font-sans', weight: [
 
 export const metadata: Metadata = {
   title: {
-    template: '%s - Nimru Cakes',
-    default: 'Nimru Cakes - Custom Cake Marketplace',
+    template: '%s - Nimru',
+    default: 'Nimru - Local Food Marketplace',
   },
-  description: 'Find the perfect custom cake for every occasion. Multi-vendor cake marketplace connecting you with the best local bakers.',
-  keywords: ['Custom Cakes', 'Cake Marketplace', 'Birthday Cakes', 'Wedding Cakes', 'Bakery', 'Sri Lanka', 'Order Cake Online'],
+  description: 'Discover and order fresh homemade food from local vendors near you. Multi-vendor food marketplace.',
+  keywords: ['Food Marketplace', 'Local Food', 'Homemade Food', 'Food Delivery', 'Sri Lanka', 'Order Food Online'],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <NotificationProvider>
             <div>
               {children}
+              <FloatingActions />
               <SpeedInsights />
 
               {/* For Chisfis's demo  -- you can remove it  */}

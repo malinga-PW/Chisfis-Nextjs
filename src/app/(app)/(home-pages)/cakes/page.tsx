@@ -53,7 +53,7 @@ function CakesPage() {
   const filteredCakes = useMemo(() => filterCakes(DEMO_CAKES_DATA, filters), [filters])
 
   return (
-    <main className="relative overflow-hidden">
+    <main className="relative overflow-x-hidden">
       <BgGlassmorphism />
       <div className="relative container mb-24 flex flex-col gap-y-24 lg:mb-28 lg:gap-y-32">
         {/* Hero */}
@@ -66,9 +66,9 @@ function CakesPage() {
         >
           <div className="absolute inset-0 rounded-3xl bg-black/40" />
           <div className="relative z-10 text-center text-white">
-            <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl">Discover Custom Cakes</h1>
+            <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl">Discover Local Food Vendors</h1>
             <p className="mx-auto mt-4 max-w-xl text-base sm:text-lg">
-              Find the perfect custom cake for any occasion in Colombo
+              Find fresh homemade food from local vendors near you
             </p>
           </div>
         </div>
@@ -77,9 +77,9 @@ function CakesPage() {
         <div>
           <HeadingWithSub
             isCenter
-            subheading="Handpicked bakers ready to deliver to your doorstep"
+            subheading="Handpicked vendors ready to deliver to your doorstep"
           >
-            Popular Bakers in Your Area
+            Popular Vendors Near You
           </HeadingWithSub>
 
           {/* Advanced Filter Bar */}

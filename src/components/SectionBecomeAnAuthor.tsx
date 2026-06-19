@@ -19,8 +19,8 @@ interface SectionBecomeAnAuthorProps {
 const SectionBecomeAnAuthor: FC<SectionBecomeAnAuthorProps> = ({
   className = '',
   rightImg = rightImgDemo,
-  heading = 'List your bakery with us.',
-  subHeading = 'With Chisfis, reach thousands of customers looking for custom cakes in your area. Showcase your creations and grow your baking business.',
+  heading = 'List your food business with us.',
+  subHeading = 'Reach thousands of customers looking for homemade food in your area. Showcase your creations and grow your food business.',
 }) => {
   return (
     <div className={`relative flex flex-col items-center lg:flex-row ${className}`}>

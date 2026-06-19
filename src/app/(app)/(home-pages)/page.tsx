@@ -69,30 +69,30 @@ function Page() {
   const filteredCakes = useMemo(() => filterCakes(DEMO_CAKES_DATA, filters), [filters])
 
   return (
-    <main className="relative overflow-hidden">
+    <main className="relative overflow-x-hidden">
       <BgGlassmorphism />
 
       <div className="relative container mb-24 flex flex-col gap-y-24 lg:mb-28 lg:gap-y-32">
         <HeroSectionWithSearchForm1
-          heading="Find the Perfect Custom Cake in Your Area"
+          heading="Discover Local Food Vendors in Your Area"
           image={heroImage}
-          imageAlt="Delicious custom cakes"
+          imageAlt="Delicious local food"
           searchForm={<HeroSearchForm initTab="Cakes" />}
           description={
             <>
               <p className="max-w-xl text-base text-neutral-500 sm:text-xl dark:text-neutral-400">
-                Browse local bakers, customize your cake, and enjoy fast delivery to your doorstep.
+                Browse local food vendors, order fresh homemade food, and enjoy fast delivery to your doorstep.
               </p>
               <ButtonPrimary href={'/cakes'} className="sm:text-base/normal">
-                Browse Cake Bakers
+                Browse All Vendors
               </ButtonPrimary>
             </>
           }
         />
 
         <section>
-          <Heading subheading="Hand-picked cake vendors selected for you.">
-            Featured Cake Bakers
+          <Heading subheading="Hand-picked local food vendors selected for you.">
+            Featured Food Vendors
           </Heading>
 
           <div className="mt-8">
@@ -107,7 +107,7 @@ function Page() {
 
           <div className="mt-16 flex items-center justify-center">
             <ButtonPrimary href={'/cakes'}>
-              View all bakers
+              View all vendors
             </ButtonPrimary>
           </div>
         </section>
@@ -118,14 +118,14 @@ function Page() {
           listItems={[
             {
               badge: 'Fresh',
-              title: 'Baked fresh to order',
-              description: 'Every cake is baked fresh upon your order, never from frozen stock',
+              title: 'Made fresh to order',
+              description: 'Every item is prepared fresh upon your order, never from frozen stock',
             },
             {
               badge: 'Local',
               badgeColor: 'green',
-              title: 'Support local bakers',
-              description: 'Connect with talented home-based and professional bakers in your city',
+              title: 'Support local vendors',
+              description: 'Connect with talented home-based and professional food vendors in your city',
             },
             {
               badge: 'Delivery',
