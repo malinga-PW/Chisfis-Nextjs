@@ -1,10 +1,7 @@
 'use client'
 
-import { DeliveryMap } from '@/components/DeliveryMap'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import { useMemo, useState } from 'react'
-
-type DeliveryMode = 'areas' | 'radius'
+import { useState } from 'react'
 
 interface CakeProduct {
   id: string
@@ -12,13 +9,6 @@ interface CakeProduct {
   category: string
   price: number
   weights: string[]
-  deliveryAreas: string[]
-  deliveryMode: DeliveryMode
-  deliveryRadiusKm: number
-  customAreaName: string
-  lat: number
-  lng: number
-  mapTouchActive: boolean
   image: string
   salesCount: number
   ongoingOrders: number
@@ -33,7 +23,6 @@ type ProductForm = Omit<CakeProduct, 'id'>
 
 const CATEGORIES = ['Birthday', 'Wedding', 'Anniversary', 'Corporate', 'Custom Design', 'Cupcakes', 'Desserts', 'Savouries']
 const WEIGHT_OPTIONS = ['500g', '1kg', '2kg', '3kg', '5kg']
-const AREA_OPTIONS = ['Colombo', 'Kandy', 'Galle', 'Nugegoda', 'Negombo', 'Jaffna', 'Batticaloa', 'Malabe', 'Kaduwela', 'Wattala']
 
 const INITIAL_PRODUCTS: CakeProduct[] = [
   {
@@ -42,13 +31,6 @@ const INITIAL_PRODUCTS: CakeProduct[] = [
     category: 'Wedding',
     price: 15000,
     weights: ['3kg', '5kg'],
-    deliveryAreas: ['Colombo', 'Kandy'],
-    deliveryMode: 'areas',
-    deliveryRadiusKm: 12,
-    customAreaName: '',
-    lat: 6.9271,
-    lng: 79.8612,
-    mapTouchActive: false,
     image: '',
     salesCount: 42,
     ongoingOrders: 5,
@@ -64,13 +46,6 @@ const INITIAL_PRODUCTS: CakeProduct[] = [
     category: 'Birthday',
     price: 6800,
     weights: ['1kg', '2kg', '3kg'],
-    deliveryAreas: ['Colombo', 'Nugegoda'],
-    deliveryMode: 'radius',
-    deliveryRadiusKm: 15,
-    customAreaName: '',
-    lat: 6.9000,
-    lng: 79.9500,
-    mapTouchActive: false,
     image: '',
     salesCount: 75,
     ongoingOrders: 8,
@@ -87,13 +62,6 @@ const EMPTY_FORM: ProductForm = {
   category: 'Birthday',
   price: 0,
   weights: [],
-  deliveryAreas: [],
-  deliveryMode: 'areas',
-  deliveryRadiusKm: 10,
-  customAreaName: '',
-  lat: 6.9271,
-  lng: 79.8612,
-  mapTouchActive: false,
   image: '',
   salesCount: 0,
   ongoingOrders: 0,
@@ -109,32 +77,23 @@ export default function VendorProductsPage() {
   const [activeEditorId, setActiveEditorId] = useState<string | 'new' | null>(null)
   const [draft, setDraft] = useState<ProductForm>(EMPTY_FORM)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [areaSearch, setAreaSearch] = useState('')
-
-  const matchingAreas = useMemo(
-    () => AREA_OPTIONS.filter((a) => a.toLowerCase().includes(areaSearch.toLowerCase())).slice(0, 6),
-    [areaSearch],
-  )
 
   const openNew = () => {
     setActiveEditorId('new')
     setDraft(EMPTY_FORM)
     setImagePreview(null)
-    setAreaSearch('')
   }
 
   const openEdit = (product: CakeProduct) => {
     setActiveEditorId(product.id)
     setDraft({ ...product })
     setImagePreview(product.image || null)
-    setAreaSearch('')
   }
 
   const cancelEditor = () => {
     setActiveEditorId(null)
     setDraft(EMPTY_FORM)
     setImagePreview(null)
-    setAreaSearch('')
   }
 
   const handleDelete = (id: string) => {
@@ -152,28 +111,13 @@ export default function VendorProductsPage() {
     }))
   }
 
-  const toggleArea = (area: string) => {
-    setDraft((prev) => ({
-      ...prev,
-      deliveryAreas: prev.deliveryAreas.includes(area)
-        ? prev.deliveryAreas.filter((a) => a !== area)
-        : [...prev.deliveryAreas, area],
-    }))
-  }
-
   const saveDraft = () => {
     if (!draft.title.trim() || draft.price <= 0) return
 
-    const normalizedAreas = draft.customAreaName.trim()
-      ? Array.from(new Set([...draft.deliveryAreas, draft.customAreaName.trim()]))
-      : draft.deliveryAreas
-
-    const nextData = { ...draft, deliveryAreas: normalizedAreas }
-
     if (activeEditorId === 'new') {
-      setProducts((prev) => [{ ...nextData, id: `p${Date.now()}` }, ...prev])
+      setProducts((prev) => [{ ...draft, id: `p${Date.now()}` }, ...prev])
     } else if (activeEditorId) {
-      setProducts((prev) => prev.map((p) => (p.id === activeEditorId ? { ...p, ...nextData } : p)))
+      setProducts((prev) => prev.map((p) => (p.id === activeEditorId ? { ...p, ...draft } : p)))
     }
     cancelEditor()
   }
@@ -252,114 +196,6 @@ export default function VendorProductsPage() {
         </div>
       </div>
 
-      <div className="mt-5 rounded-xl border border-neutral-200 p-4 dark:border-neutral-700">
-        <p className="text-sm font-semibold">Delivery Area Controls</p>
-        <p className="mt-1 text-xs text-neutral-500">Select on map, radius circle, and search on map area names</p>
-
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          {([
-            { value: 'areas', label: 'Area by Name' },
-            { value: 'radius', label: 'Radius Circle' },
-          ] as const).map((mode) => (
-            <button
-              key={mode.value}
-              type="button"
-              onClick={() => setDraft((p) => ({ ...p, deliveryMode: mode.value }))}
-              className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm ${
-                draft.deliveryMode === mode.value
-                  ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
-                  : 'border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'
-              }`}
-            >
-              <span className={`h-3 w-3 rounded-full ${draft.deliveryMode === mode.value ? 'bg-white dark:bg-neutral-900' : 'bg-neutral-300 dark:bg-neutral-600'}`} />
-              {mode.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-3">
-          <label className="text-xs font-medium text-neutral-500">Search on map (area/city)</label>
-          <input
-            type="text"
-            value={areaSearch}
-            onChange={(e) => setAreaSearch(e.target.value)}
-            placeholder="Search area and tap to add"
-            className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
-          />
-          {areaSearch && matchingAreas.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {matchingAreas.map((area) => (
-                <button
-                  key={area}
-                  type="button"
-                  onClick={() => toggleArea(area)}
-                  className={`rounded-full px-3 py-1 text-xs ${draft.deliveryAreas.includes(area) ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'border border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'}`}
-                >
-                  {area}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {draft.deliveryMode === 'areas' ? (
-          <>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {AREA_OPTIONS.map((a) => (
-                <button
-                  key={a}
-                  type="button"
-                  onClick={() => toggleArea(a)}
-                  className={`rounded-full px-3 py-1 text-xs ${draft.deliveryAreas.includes(a) ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'border border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'}`}
-                >
-                  {a}
-                </button>
-              ))}
-            </div>
-            <input
-              type="text"
-              value={draft.customAreaName}
-              onChange={(e) => setDraft((p) => ({ ...p, customAreaName: e.target.value }))}
-              placeholder="Optional area name (e.g. Homagama)"
-              className="mt-3 w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
-            />
-          </>
-        ) : (
-          <div className="mt-3">
-            <label className="text-sm font-medium">Radius Circle ({draft.deliveryRadiusKm} km)</label>
-            <input
-              type="range"
-              min={1}
-              max={50}
-              value={draft.deliveryRadiusKm}
-              onChange={(e) => setDraft((p) => ({ ...p, deliveryRadiusKm: Number(e.target.value) }))}
-              className="mt-2 w-full accent-neutral-900"
-            />
-          </div>
-        )}
-
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={() => setDraft((p) => ({ ...p, mapTouchActive: !p.mapTouchActive }))}
-            className={`rounded-full px-4 py-1.5 text-xs font-medium ${draft.mapTouchActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300'}`}
-          >
-            {draft.mapTouchActive ? 'Map touch select ACTIVE' : 'Activate map touch select'}
-          </button>
-          <p className="mt-1 text-xs text-neutral-500">When active, tap/drag marker on map to set delivery center.</p>
-        </div>
-
-        <div className="mt-3 overflow-hidden rounded-xl">
-          <DeliveryMap
-            initialLat={draft.lat}
-            initialLng={draft.lng}
-            draggable={draft.mapTouchActive}
-            onLocationChange={(lat, lng) => setDraft((p) => ({ ...p, lat, lng }))}
-            height="h-52"
-          />
-        </div>
-      </div>
-
       <div className="mt-5 flex gap-2">
         <button
           onClick={saveDraft}
@@ -386,7 +222,7 @@ export default function VendorProductsPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold">Manage Products</h1>
-            <p className="mt-1 text-neutral-500">Inline editing, map-based delivery control, and richer product performance tiles.</p>
+            <p className="mt-1 text-neutral-500">Inline editing and richer product performance tiles.</p>
           </div>
           <button
             onClick={openNew}
@@ -429,9 +265,6 @@ export default function VendorProductsPage() {
                   <p className="text-xl font-semibold">{product.title}</p>
                   <p className="mt-1 text-sm text-neutral-500">
                     {product.category} &middot; LKR {product.price.toLocaleString()} &middot; {product.weights.join(', ')}
-                  </p>
-                  <p className="mt-1 text-xs text-neutral-400">
-                    Delivery: {product.deliveryMode === 'radius' ? `${product.deliveryRadiusKm} km radius circle` : product.deliveryAreas.join(', ')}
                   </p>
                 </div>
 
