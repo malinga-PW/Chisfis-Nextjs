@@ -1,4 +1,4 @@
-import { getSupabaseClient, isSupabaseConfigured } from './client'
+import { getSupabaseClient } from './client'
 
 export interface AuthUser {
   id: string
@@ -9,6 +9,10 @@ export interface AuthUser {
 }
 
 const ADMIN_PASSWORD = 'Admin@hostlanka'
+
+function phoneToEmail(phone: string): string {
+  return `${phone.replace(/[^0-9]/g, '')}@chisfis.local`
+}
 
 function adminLogin(phone: string, password: string): { user: AuthUser | null; error: string | null } {
   if (password !== ADMIN_PASSWORD) {
@@ -43,10 +47,12 @@ export async function signUpWithPhone(
     return { user: null, error: 'Supabase not configured' }
   }
 
+  const email = phoneToEmail(phone)
+
   const { data, error } = await client.auth.signUp({
-    phone,
+    email,
     password,
-    options: { data: { name: metadata.name, role: metadata.role } },
+    options: { data: { name: metadata.name, role: metadata.role, phone } },
   })
 
   if (error) return { user: null, error: error.message }
@@ -55,7 +61,7 @@ export async function signUpWithPhone(
   return {
     user: {
       id: data.user.id,
-      phone: data.user.phone ?? phone,
+      phone,
       name: metadata.name,
       role: metadata.role,
     },
@@ -76,15 +82,18 @@ export async function signInWithPhone(
     return { user: null, error: 'Supabase not configured - check .env.local' }
   }
 
-  const { data, error } = await client.auth.signInWithPassword({ phone, password })
+  const email = phoneToEmail(phone)
+
+  const { data, error } = await client.auth.signInWithPassword({ email, password })
   if (error) return { user: null, error: error.message }
   if (!data.user) return { user: null, error: 'Login failed' }
 
   const meta = data.user.user_metadata ?? {}
+  const storedPhone = (meta.phone as string) ?? phone
   return {
     user: {
       id: data.user.id,
-      phone: data.user.phone ?? phone,
+      phone: storedPhone,
       name: (meta.name as string) ?? phone,
       role: (meta.role as 'BUYER' | 'SELLER' | 'SUPER_ADMIN') ?? 'BUYER',
     },
@@ -109,8 +118,8 @@ export async function getSessionUser(): Promise<AuthUser | null> {
   const meta = u.user_metadata ?? {}
   return {
     id: u.id,
-    phone: u.phone ?? '',
-    name: (meta.name as string) ?? u.phone ?? 'User',
+    phone: (meta.phone as string) ?? u.email ?? '',
+    name: (meta.name as string) ?? u.email ?? 'User',
     role: (meta.role as 'BUYER' | 'SELLER' | 'SUPER_ADMIN') ?? 'BUYER',
   }
 }
@@ -130,8 +139,8 @@ export function onAuthStateChange(cb: (user: AuthUser | null) => void): () => vo
     const meta = u.user_metadata ?? {}
     cb({
       id: u.id,
-      phone: u.phone ?? '',
-      name: (meta.name as string) ?? u.phone ?? 'User',
+      phone: (meta.phone as string) ?? u.email ?? '',
+      name: (meta.name as string) ?? u.email ?? 'User',
       role: (meta.role as 'BUYER' | 'SELLER' | 'SUPER_ADMIN') ?? 'BUYER',
     })
   })
