@@ -19,13 +19,13 @@ const CakeCard: FC<CakeCardProps> = ({ className = '', data }) => {
     <div
       className={`group relative bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden rounded-2xl transition-shadow hover:shadow-xl ${className}`}
     >
-      <div className="relative w-full aspect-w-4 aspect-h-3 overflow-hidden">
+      <div className="relative w-full aspect-w-4 aspect-h-2 overflow-hidden">
         <Image
           src={featuredImage}
           alt={title}
           fill
           className="object-cover"
-          sizes="(max-width: 1025px) 100vw, 25vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
       </div>
       <Link href={`/baker/${id}`} className="space-y-4 p-4">

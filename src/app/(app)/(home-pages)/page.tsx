@@ -52,7 +52,7 @@ async function Page() {
           <Heading subheading="Hand-picked cake vendors selected for you.">
             Featured Cake Bakers
           </Heading>
-          <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 md:gap-x-8 md:gap-y-14 lg:grid-cols-3 xl:grid-cols-3">
             {DEMO_CAKES_DATA.map((cake) => (
               <CakeCard key={cake.id} data={cake} />
             ))}

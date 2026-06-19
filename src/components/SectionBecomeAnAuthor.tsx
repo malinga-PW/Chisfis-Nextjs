@@ -24,6 +24,9 @@ const SectionBecomeAnAuthor: FC<SectionBecomeAnAuthorProps> = ({
   const [showModal, setShowModal] = useState(false)
   const [couponCode, setCouponCode] = useState('')
   const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [bakerName, setBakerName] = useState('')
+  const [businessLocation, setBusinessLocation] = useState('')
+  const [verificationDoc, setVerificationDoc] = useState('')
 
   const handleApplyCoupon = () => {
     if (couponCode.toUpperCase() === 'BAKER2026') {
@@ -67,10 +70,26 @@ const SectionBecomeAnAuthor: FC<SectionBecomeAnAuthorProps> = ({
               Fill in your details to start selling cakes on Chisfis.
             </p>
 
-            <div className="mt-6 space-y-4">
+            <div className="mt-6 space-y-5">
               <div>
-                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Baker Name</label>
-                <input type="text" placeholder="Your bakery name" className="mt-1 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Business Name <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={bakerName}
+                  onChange={(e) => setBakerName(e.target.value)}
+                  placeholder="Your bakery name"
+                  className="mt-1 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Location <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={businessLocation}
+                  onChange={(e) => setBusinessLocation(e.target.value)}
+                  placeholder="City, District, Province"
+                  className="mt-1 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
+                />
               </div>
               <div>
                 <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
@@ -80,8 +99,33 @@ const SectionBecomeAnAuthor: FC<SectionBecomeAnAuthorProps> = ({
                 <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Phone</label>
                 <input type="tel" placeholder="+94 XX XXX XXXX" className="mt-1 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
               </div>
-
               <div>
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  Verification Document <span className="text-neutral-400">(Business registration / ID)</span>
+                </label>
+                <div
+                  onClick={() => document.getElementById('verification-upload')?.click()}
+                  className="mt-1 flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 px-4 py-6 text-sm text-neutral-500 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-500"
+                >
+                  {verificationDoc ? (
+                    <span className="text-green-600">{verificationDoc}</span>
+                  ) : (
+                    <span>Click to upload verification document</span>
+                  )}
+                </div>
+                <input
+                  id="verification-upload"
+                  type="file"
+                  accept=".pdf,.jpg,.png"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) setVerificationDoc(file.name)
+                  }}
+                />
+              </div>
+
+              <div className="border-t border-neutral-200 pt-4 dark:border-neutral-700">
                 <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                   Promotional / Invitation Coupon Code
                 </label>

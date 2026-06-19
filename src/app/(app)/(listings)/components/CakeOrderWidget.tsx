@@ -45,6 +45,11 @@ const CakeOrderWidget = ({ bakerName = 'Baker', onOrderSuccess }: Props) => {
   const [lng, setLng] = useState(79.8612)
   const [showModal, setShowModal] = useState(false)
   const [orderRef, setOrderRef] = useState('')
+  const [showBuyerForm, setShowBuyerForm] = useState(false)
+  const [buyerName, setBuyerName] = useState('')
+  const [buyerMobile, setBuyerMobile] = useState('')
+  const [buyerEmail, setBuyerEmail] = useState('')
+  const [buyerSaved, setBuyerSaved] = useState(false)
 
   const { dispatchNotification } = useNotifications()
 
@@ -53,6 +58,10 @@ const CakeOrderWidget = ({ bakerName = 'Baker', onOrderSuccess }: Props) => {
   const total = subtotal + deliveryFee
 
   const handleRequestOrder = () => {
+    if (!buyerSaved) {
+      setShowBuyerForm(true)
+      return
+    }
     const ref = `ORD-${Date.now().toString(36).toUpperCase()}`
     setOrderRef(ref)
     setShowModal(true)
@@ -60,7 +69,7 @@ const CakeOrderWidget = ({ bakerName = 'Baker', onOrderSuccess }: Props) => {
     const deliveryDesc = selectedDelivery.value === 'pickup' ? 'Store Pickup' : addressLine || 'Doorstep Delivery'
     dispatchNotification({
       name: bakerName,
-      description: `New Order Received! Buyer placed a ${selectedWeight.label} cake for ${deliveryDate}. Delivery: ${deliveryDesc}.`,
+      description: `New Order Received! ${buyerName || 'A buyer'} placed a ${selectedWeight.label} cake for ${deliveryDate}. Delivery: ${deliveryDesc}.`,
       time: 'Just now',
       href: '#',
     })
@@ -218,6 +227,76 @@ const CakeOrderWidget = ({ bakerName = 'Baker', onOrderSuccess }: Props) => {
             >
               Done
             </button>
+          </div>
+        </div>
+      )}
+
+      {showBuyerForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl dark:bg-neutral-800">
+            <h3 className="text-xl font-semibold">Complete Your Profile</h3>
+            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+              Please provide your details to continue with the order.
+            </p>
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={buyerName}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  placeholder="John Doe"
+                  className="mt-1 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  Mobile Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  value={buyerMobile}
+                  onChange={(e) => setBuyerMobile(e.target.value)}
+                  placeholder="+94 XX XXX XXXX"
+                  className="mt-1 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
+                />
+                <p className="mt-1 text-xs text-neutral-400">Will be used for phone verification (OTP)</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  Email Address <span className="text-neutral-400">(optional)</span>
+                </label>
+                <input
+                  type="email"
+                  value={buyerEmail}
+                  onChange={(e) => setBuyerEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="mt-1 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setShowBuyerForm(false)}
+                className="flex-1 rounded-full border border-neutral-200 px-6 py-3 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (!buyerName.trim() || !buyerMobile.trim()) return
+                  setBuyerSaved(true)
+                  setShowBuyerForm(false)
+                  handleRequestOrder()
+                }}
+                disabled={!buyerName.trim() || !buyerMobile.trim()}
+                className="flex-1 rounded-full bg-neutral-900 px-6 py-3 text-sm font-semibold text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
+              >
+                Save & Continue
+              </button>
+            </div>
           </div>
         </div>
       )}
