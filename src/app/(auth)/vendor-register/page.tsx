@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function VendorRegisterPage() {
-  const { signup, user } = useAuth()
+  const { signup } = useAuth()
   const router = useRouter()
   const [businessName, setBusinessName] = useState('')
   const [phone, setPhone] = useState('')
@@ -23,39 +23,48 @@ export default function VendorRegisterPage() {
     setError('')
     setBusy(true)
 
-    const err = await signup(phone, password, businessName, 'SELLER')
-    if (err) {
-      setError(err)
+    let result: { error: string | null; userId: string | null }
+    try {
+      result = await signup(phone, password, businessName, 'SELLER')
+    } catch (ex: any) {
+      setError(ex?.message ?? 'Registration failed')
+      setBusy(false)
+      return
+    }
+    if (result.error) {
+      setError(result.error)
       setBusy(false)
       return
     }
 
-    try {
-      await upsertVendorToSupabase({
-        id: user?.id ?? '',
-        businessName,
-        owner: businessName,
-        email: phone,
-        location,
-        phone,
-        logo: '',
-        ownerPhoto: '',
-        whatsappNumber: phone,
-        whatsappAvailable: true,
-        address: `${location}, Sri Lanka`,
-        lat: 6.9271,
-        lng: 79.8612,
-        deliveryMode: 'areas',
-        deliveryAreas: [],
-        deliveryRadiusKm: 10,
-        visibility: { ownerName: true, phone: true, address: true, deliveryInfo: true, whatsapp: true },
-        products: [],
-        improvementNotes: '',
-        status: 'Pending',
-        submitted: new Date().toISOString(),
-      })
-    } catch {
-      // vendor record best-effort
+    if (result.userId) {
+      try {
+        await upsertVendorToSupabase({
+          id: result.userId,
+          businessName,
+          owner: businessName,
+          email: phone,
+          location,
+          phone,
+          logo: '',
+          ownerPhoto: '',
+          whatsappNumber: phone,
+          whatsappAvailable: true,
+          address: `${location}, Sri Lanka`,
+          lat: 6.9271,
+          lng: 79.8612,
+          deliveryMode: 'areas',
+          deliveryAreas: [],
+          deliveryRadiusKm: 10,
+          visibility: { ownerName: true, phone: true, address: true, deliveryInfo: true, whatsapp: true },
+          products: [],
+          improvementNotes: '',
+          status: 'Pending',
+          submitted: new Date().toISOString(),
+        })
+      } catch {
+        // vendor record best-effort
+      }
     }
 
     router.push('/vendor/dashboard')

@@ -23,7 +23,7 @@ export interface User {
 interface AuthContextType {
   user: User | null
   login: (phone: string, password: string) => Promise<void>
-  signup: (phone: string, password: string, name: string, role: 'BUYER' | 'SELLER') => Promise<string | null>
+  signup: (phone: string, password: string, name: string, role: 'BUYER' | 'SELLER') => Promise<{ error: string | null; userId: string | null }>
   logout: () => void
   switchRole: (role: UserRole) => void
   isAuthenticated: boolean
@@ -69,11 +69,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(mapAuthUser(au))
   }
 
-  const signup = async (phone: string, password: string, name: string, role: 'BUYER' | 'SELLER'): Promise<string | null> => {
+  const signup = async (phone: string, password: string, name: string, role: 'BUYER' | 'SELLER'): Promise<{ error: string | null; userId: string | null }> => {
     const { user: au, error } = await signUpWithPhone(phone, password, { name, role })
-    if (error) return error
-    if (au) setUser(mapAuthUser(au))
-    return null
+    if (error) return { error, userId: null }
+    if (au) {
+      setUser(mapAuthUser(au))
+      return { error: null, userId: au.id }
+    }
+    return { error: 'Signup failed – no user returned', userId: null }
   }
 
   const logout = async () => {

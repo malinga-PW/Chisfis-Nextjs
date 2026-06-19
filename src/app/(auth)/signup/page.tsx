@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
+import { upsertBuyerToSupabase } from '@/lib/supabase/adminUsers'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import Logo from '@/shared/Logo'
 import Link from 'next/link'
@@ -20,12 +21,31 @@ export default function SignupPage() {
     e.preventDefault()
     setError('')
     setBusy(true)
-    const err = await signup(phone, password, name, 'BUYER')
-    if (err) {
-      setError(err)
-      setBusy(false)
-    } else {
+    try {
+      const { error: err, userId } = await signup(phone, password, name, 'BUYER')
+      if (err) {
+        setError(err)
+        setBusy(false)
+        return
+      }
+      if (userId) {
+        try {
+          await upsertBuyerToSupabase({
+            id: userId,
+            name,
+            email: phone,
+            phone,
+            orders: 0,
+            joined: new Date().toISOString().slice(0, 10),
+          })
+        } catch {
+          // best-effort
+        }
+      }
       router.push('/')
+    } catch (err: any) {
+      setError(err?.message ?? 'Registration failed')
+      setBusy(false)
     }
   }
 
