@@ -22,27 +22,27 @@ const DEMO_DATA: SectionHowItWorkProps['data'] = [
   {
     id: 1,
     img: HIW1img,
-    title: 'Book & relax',
-    desc: 'Let each trip be an inspirational journey, each room a peaceful space',
+    title: 'Find a local baker',
+    desc: 'Browse talented cake vendors near you and pick the perfect style for your occasion',
   },
   {
     id: 2,
     img: HIW2img,
-    title: 'Smart checklist',
-    desc: 'Let each trip be an inspirational journey, each room a peaceful space',
+    title: 'Customize your cake',
+    desc: 'Choose your flavor, size, design, and decorations to make it uniquely yours',
   },
   {
     id: 3,
     img: HIW3img,
-    title: 'Save more',
-    desc: 'Let each trip be an inspirational journey, each room a peaceful space',
+    title: 'Fast & safe delivery',
+    desc: 'Your cake is carefully packed and delivered fresh right to your doorstep',
   },
 ]
 
-const SectionHowItWork: FC<SectionHowItWorkProps> = ({ className = '', data = DEMO_DATA, title = 'How it work' }) => {
+const SectionHowItWork: FC<SectionHowItWorkProps> = ({ className = '', data = DEMO_DATA, title = 'How it works' }) => {
   return (
     <div className={`nc-SectionHowItWork ${className}`} data-nc-id="SectionHowItWork">
-      <Heading isCenter subheading="Keep calm & travel on">
+      <Heading isCenter subheading="Ordering a custom cake is easy">
         {title}
       </Heading>
       <div className="relative mt-20 grid gap-20 md:grid-cols-3">

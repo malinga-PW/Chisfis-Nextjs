@@ -108,8 +108,8 @@ export default function Footer2() {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
             <Logo className="w-20" />
-            <p className="text-sm/6 text-balance text-gray-600 dark:text-neutral-400">
-              Making the world a better place through constructing elegant hierarchies.
+             <p className="text-sm/6 text-balance text-gray-600 dark:text-neutral-400">
+              Find the perfect custom cake for every occasion. Connecting you with the best local bakers.
             </p>
             <div className="flex gap-x-6">
               {navigation.social.map((item) => (

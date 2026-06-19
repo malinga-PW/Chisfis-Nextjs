@@ -3,7 +3,6 @@
 import T from '@/utils/getT'
 import { CloseButton, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
-import { Airplane02Icon, Building03Icon, Car03Icon, HotAirBalloonIcon, House04Icon } from '@hugeicons/core-free-icons'
 import { CakeIcon } from '@/components/Icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import Link from 'next/link'
@@ -16,40 +15,10 @@ const solutions: {
   icon: any
 }[] = [
   {
-    name: T['Header']['DropdownTravelers']['Stays'],
-    description: T['Header']['DropdownTravelers']['stayDescription'],
-    href: '/',
-    icon: House04Icon,
-  },
-  {
-    name: T['Header']['DropdownTravelers']['Real Estate'],
-    description: T['Header']['DropdownTravelers']['estateDescription'],
-    href: '/real-estate',
-    icon: Building03Icon,
-  },
-  {
-    name: 'Car rentals',
-    description: T['Header']['DropdownTravelers']['carDescription'],
-    href: '/car',
-    icon: Car03Icon,
-  },
-  {
-    name: T['Header']['DropdownTravelers']['Experiences'],
-    description: T['Header']['DropdownTravelers']['experienceDescription'],
-    href: '/experience',
-    icon: HotAirBalloonIcon,
-  },
-  {
     name: T['Header']['DropdownTravelers']['Cakes'],
     description: T['Header']['DropdownTravelers']['cakeDescription'],
     href: '/cakes',
     icon: CakeIcon,
-  },
-  {
-    name: T['Header']['DropdownTravelers']['Flights'],
-    description: T['Header']['DropdownTravelers']['Flight description'],
-    href: '/flight-categories/all',
-    icon: Airplane02Icon,
   },
 ]
 
@@ -59,7 +28,7 @@ export default function DropdownTravelers() {
   return (
     <Popover className="group">
       <PopoverButton className="-m-2.5 flex items-center p-2.5 text-sm font-medium text-neutral-700 group-hover:text-neutral-950 focus:outline-hidden dark:text-neutral-300 dark:group-hover:text-neutral-100">
-        Travelers
+        Bakers
         <ChevronDownIcon className="ms-1 size-4 group-data-open:rotate-180" aria-hidden="true" />
       </PopoverButton>
       <PopoverPanel

@@ -1,109 +1,105 @@
 import BackgroundSection from '@/components/BackgroundSection'
 import BgGlassmorphism from '@/components/BgGlassmorphism'
+import CakeCard from '@/components/CakeCard'
 import HeroSectionWithSearchForm1 from '@/components/hero-sections/HeroSectionWithSearchForm1'
 import HeroSearchForm from '@/components/HeroSearchForm/HeroSearchForm'
 import SectionBecomeAnAuthor from '@/components/SectionBecomeAnAuthor'
 import SectionClientSay from '@/components/SectionClientSay'
-import SectionGridAuthorBox from '@/components/SectionGridAuthorBox'
-import SectionGridCategoryBox from '@/components/SectionGridCategoryBox'
-import SectionGridFeaturePlaces from '@/components/SectionGridFeaturePlaces'
 import SectionHowItWork from '@/components/SectionHowItWork'
 import SectionOurFeatures from '@/components/SectionOurFeatures'
-import SectionSliderNewCategories from '@/components/SectionSliderNewCategories'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
-import SectionVideos from '@/components/SectionVideos'
-import { getAuthors } from '@/data/authors'
-import { getStayCategories } from '@/data/categories'
-import { getStayListings } from '@/data/listings'
-import heroImage from '@/images/hero-right.png'
+import { DEMO_CAKES_DATA } from '@/data/cakes'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import { Divider } from '@/shared/divider'
-import HeadingWithSub from '@/shared/Heading'
+import Heading from '@/shared/Heading'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Home',
-  description: 'Home page of the Stay application',
+  title: 'Custom Cakes Marketplace',
+  description: 'Find the perfect custom cake in your area',
+}
+
+const heroImage = {
+  src: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=80',
+  width: 1200,
+  height: 900,
 }
 
 async function Page() {
-  const categories = await getStayCategories()
-  const stayListings = await getStayListings()
-  const authors = await getAuthors()
-
   return (
     <main className="relative overflow-hidden">
       <BgGlassmorphism />
 
       <div className="relative container mb-24 flex flex-col gap-y-24 lg:mb-28 lg:gap-y-32">
         <HeroSectionWithSearchForm1
-          heading="Hotel, car, experiences"
+          heading="Find the Perfect Custom Cake in Your Area"
           image={heroImage}
-          imageAlt="hero"
-          searchForm={<HeroSearchForm initTab="Stays" />}
+          imageAlt="Delicious custom cakes"
+          searchForm={<HeroSearchForm initTab="Cakes" />}
           description={
             <>
               <p className="max-w-xl text-base text-neutral-500 sm:text-xl dark:text-neutral-400">
-                With us, your trip is filled with amazing experiences.
+                Browse local bakers, customize your cake, and enjoy fast delivery to your doorstep.
               </p>
-              <ButtonPrimary href={'/stay-categories/all'} className="sm:text-base/normal">
-                Start your search
+              <ButtonPrimary href={'/cakes'} className="sm:text-base/normal">
+                Browse Cake Bakers
               </ButtonPrimary>
             </>
           }
         />
 
         <section>
-          <HeadingWithSub subheading="Explore the best places to stay in the world.">
-            Let&apos;s go on an adventure
-          </HeadingWithSub>
-          <SectionSliderNewCategories categoryCardType="card3" categories={categories.slice(0, 7)} />
+          <Heading subheading="Hand-picked cake vendors selected for you.">
+            Featured Cake Bakers
+          </Heading>
+          <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:grid-cols-3 xl:grid-cols-4">
+            {DEMO_CAKES_DATA.map((cake) => (
+              <CakeCard key={cake.id} data={cake} />
+            ))}
+          </div>
+          <div className="mt-16 flex items-center justify-center">
+            <ButtonPrimary href={'/cakes'}>
+              View all bakers
+            </ButtonPrimary>
+          </div>
         </section>
 
-        <SectionOurFeatures className="py-14" />
-
-        <SectionGridFeaturePlaces stayListings={stayListings} cardType="card2" />
+        <SectionOurFeatures
+          subHeading="Benefits"
+          heading="Why order with us?"
+          listItems={[
+            {
+              badge: 'Fresh',
+              title: 'Baked fresh to order',
+              description: 'Every cake is baked fresh upon your order, never from frozen stock',
+            },
+            {
+              badge: 'Local',
+              badgeColor: 'green',
+              title: 'Support local bakers',
+              description: 'Connect with talented home-based and professional bakers in your city',
+            },
+            {
+              badge: 'Delivery',
+              badgeColor: 'red',
+              title: 'Fast & safe delivery',
+              description: 'Carefully packed and delivered to your doorstep with real-time tracking',
+            },
+          ]}
+        />
 
         <Divider />
 
         <SectionHowItWork />
 
-        <section className="relative py-20">
-          <BackgroundSection />
-          <HeadingWithSub isCenter subheading="Keep calm & travel on">
-            Become a host
-          </HeadingWithSub>
-          <SectionGridAuthorBox authors={authors} />
-        </section>
-
         <SectionSubscribe2 />
 
         <Divider />
-
-        <section>
-          <HeadingWithSub isCenter subheading={'Great places near where you live'}>
-            Explore nearby
-          </HeadingWithSub>
-          <SectionGridCategoryBox categories={categories.slice(0, 8)} />
-        </section>
 
         <section className="relative py-16">
           <BackgroundSection />
           <SectionBecomeAnAuthor />
         </section>
-
-        <section>
-          <HeadingWithSub subheading="Explore houses based on 10 types of stays">
-            Explore by types of stays
-          </HeadingWithSub>
-          <SectionSliderNewCategories
-            itemClassName="w-[17rem] lg:w-1/3 xl:w-1/4"
-            categories={categories.slice(7, 16)}
-            categoryCardType="card5"
-          />
-        </section>
-
-        <SectionVideos />
 
         <section className="relative py-16">
           <SectionClientSay />
