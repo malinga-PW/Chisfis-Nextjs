@@ -1,7 +1,6 @@
 'use client'
 
 import { Divider } from '@/shared/divider'
-import T from '@/utils/getT'
 import { useState } from 'react'
 
 const WEIGHT_OPTIONS = [
