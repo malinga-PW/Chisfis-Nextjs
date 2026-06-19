@@ -1,7 +1,7 @@
 'use client'
 
 import { Map, MapMarker, MarkerContent, MapControls } from '@/components/ui/map'
-import { LocateFixedIcon } from '@hugeicons/core-free-icons'
+import { Location01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useEffect, useState } from 'react'
 
@@ -64,7 +64,7 @@ export const DeliveryMap = ({ onLocationChange, height = 'h-72' }: Props) => {
         disabled={isLocating}
         className="absolute bottom-3 right-3 z-20 flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-medium shadow-md transition-colors hover:bg-neutral-50 disabled:opacity-50 dark:bg-neutral-800 dark:hover:bg-neutral-700"
       >
-        <HugeiconsIcon icon={LocateFixedIcon} size={16} className={isLocating ? 'animate-spin' : ''} />
+        <HugeiconsIcon icon={Location01Icon} size={16} className={isLocating ? 'animate-spin' : ''} />
         {isLocating ? 'Locating...' : 'Use My Current Location'}
       </button>
     </div>
