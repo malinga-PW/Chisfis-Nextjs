@@ -14,6 +14,7 @@ export const PriceRangeSlider = ({
   inputMaxName = 'price_max',
   inputMinName = 'price_min',
   showTitle = true,
+  inline = false,
 }: {
   min: number
   max: number
@@ -24,8 +25,31 @@ export const PriceRangeSlider = ({
   inputMaxName?: string
   inputMinName?: string
   showTitle?: boolean
+  inline?: boolean
 }) => {
   const [rangePrices, setRangePrices] = useState<number[]>([defaultValue?.[0] ?? min, defaultValue?.[1] ?? max])
+
+  if (inline) {
+    return (
+      <div className={clsx('relative', className)}>
+        <Slider
+          range
+          min={min}
+          max={max}
+          step={100}
+          value={rangePrices}
+          allowCross={false}
+          onChange={(value) => {
+            const newRange = value as [number, number]
+            setRangePrices(newRange)
+            onChange?.(newRange)
+          }}
+        />
+        <input type="hidden" name={inputMinName} value={rangePrices[0]} />
+        <input type="hidden" name={inputMaxName} value={rangePrices[1]} />
+      </div>
+    )
+  }
 
   return (
     <div className={clsx('relative flex flex-col gap-y-6', className)}>
@@ -36,8 +60,8 @@ export const PriceRangeSlider = ({
             range
             min={min}
             max={max}
-            step={1}
-            value={rangePrices} // Sử dụng value thay vì defaultValue để kiểm soát giá trị
+            step={100}
+            value={rangePrices}
             allowCross={false}
             onChange={(value) => {
               const newRange = value as [number, number]

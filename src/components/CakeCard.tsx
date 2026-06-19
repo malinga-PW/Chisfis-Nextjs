@@ -15,7 +15,7 @@ interface CakeCardProps {
 }
 
 const CakeCard: FC<CakeCardProps> = ({ className = '', data }) => {
-  const { vendorName, title, deliveryAreas, price, rating, reviewsCount, featuredImage, id, gallery } = data
+  const { vendorName, vendorLogo, title, deliveryAreas, price, rating, reviewsCount, featuredImage, id, gallery } = data
   const images = [featuredImage, ...(gallery || []).slice(0, 4)]
   const [hovered, setHovered] = useState(false)
   const [slideIdx, setSlideIdx] = useState(0)
@@ -98,9 +98,9 @@ const CakeCard: FC<CakeCardProps> = ({ className = '', data }) => {
           </svg>
         </button>
 
-        {/* Dots indicator */}
+        {/* Dots indicator - raised above the avatar cutout area */}
         {hovered && images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
+          <div className="absolute bottom-12 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
             {images.map((_, i) => (
               <button
                 key={i}
@@ -136,20 +136,33 @@ const CakeCard: FC<CakeCardProps> = ({ className = '', data }) => {
         )}
       </div>
 
-      {/* Text Section - Increased Padding */}
-      <Link href={`/baker/${id}`} className="block p-5">
-        <div className="flex items-center gap-2 mb-2">
+      {/* Vendor Avatar - overlapping curved cutout style */}
+      <div className="flex justify-center -mt-8 relative z-10">
+        <div className="h-16 w-16 rounded-full border-[4px] border-white bg-white shadow-md dark:border-neutral-900 dark:bg-neutral-900 overflow-hidden">
+          <Image
+            src={vendorLogo}
+            alt={vendorName}
+            width={64}
+            height={64}
+            className="object-cover w-full h-full"
+          />
+        </div>
+      </div>
+
+      {/* Text Section */}
+      <Link href={`/baker/${id}`} className="block px-5 pb-5 pt-3">
+        <div className="flex items-center gap-2 mb-1.5 justify-center">
           <Badge color="orange">{vendorName}</Badge>
         </div>
-        <h2 className="text-base font-semibold text-neutral-900 capitalize dark:text-white leading-snug">
+        <h2 className="text-base font-semibold text-neutral-900 capitalize dark:text-white leading-snug text-center">
           <span className="line-clamp-1">{title}</span>
         </h2>
-        <div className="mt-1.5 flex items-center gap-x-1.5 text-sm text-neutral-500 dark:text-neutral-400">
+        <div className="mt-2 flex items-center justify-center gap-x-1.5 text-sm text-neutral-500 dark:text-neutral-400">
           <HugeiconsIcon icon={Location06Icon} size={14} color="currentColor" strokeWidth={1.5} />
           {deliveryAreas.slice(0, 2).join(', ')}
           {deliveryAreas.length > 2 && <span className="text-xs">+{deliveryAreas.length - 2} more</span>}
         </div>
-        <div className="mt-3 w-12 border-b border-neutral-100 dark:border-neutral-800" />
+        <div className="mt-3 mx-auto w-12 border-b border-neutral-100 dark:border-neutral-800" />
         <div className="mt-3 flex items-center justify-between">
           <span className="text-lg font-semibold">
             LKR {price.toLocaleString()}

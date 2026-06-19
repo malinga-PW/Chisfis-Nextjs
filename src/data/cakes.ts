@@ -1,6 +1,7 @@
 export interface TCakeListing {
   id: string
   vendorName: string
+  vendorLogo: string
   title: string
   province: string
   town: string
@@ -18,6 +19,8 @@ export interface TCakeListing {
   isHalalCertified: boolean
   minOrderNotice: string
 }
+
+const LOGO = (name: string) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=FF6B35&color=fff&size=128&bold=true`
 
 const IMG = {
   wedding: 'https://images.unsplash.com/photo-1535254973040-607b474cb50d?auto=format&fit=crop&w=800&q=80',
@@ -52,6 +55,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-1',
     vendorName: 'Nimru Cakes',
+    vendorLogo: LOGO('Nimru Cakes'),
     title: 'Elegant Fondant Wedding Cakes & Custom Celebrations',
     province: 'Western Province',
     town: 'Colombo',
@@ -72,6 +76,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-2',
     vendorName: 'Sweet Cravings Colombo',
+    vendorLogo: LOGO('Sweet Cravings'),
     title: 'Artisan Cupcakes & Gourmet Desserts',
     province: 'Western Province',
     town: 'Nugegoda',
@@ -92,6 +97,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-3',
     vendorName: 'Kandy Cake House',
+    vendorLogo: LOGO('Kandy Cake House'),
     title: 'Traditional Sri Lankan Cakes & Modern Bakes',
     province: 'Central Province',
     town: 'Kandy',
@@ -112,6 +118,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-4',
     vendorName: 'Battaramulla Bakers',
+    vendorLogo: LOGO('Battaramulla Bakers'),
     title: 'Fresh Cream Cakes & Pastries for Every Occasion',
     province: 'Western Province',
     town: 'Kaduwela',
@@ -132,6 +139,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-5',
     vendorName: 'Galle Fort Fancies',
+    vendorLogo: LOGO('Galle Fort Fancies'),
     title: 'Boutique Designer Cakes & Macaron Towers',
     province: 'Southern Province',
     town: 'Galle',
@@ -152,6 +160,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-6',
     vendorName: 'Negombo Sweet Spot',
+    vendorLogo: LOGO('Negombo Sweet Spot'),
     title: 'Beachside Bakes - Themed Cakes & Cupcakes',
     province: 'Western Province',
     town: 'Negombo',
@@ -172,6 +181,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-7',
     vendorName: 'Jaffna Jasmine Bakery',
+    vendorLogo: LOGO('Jaffna Jasmine Bakery'),
     title: 'Authentic Northern Specialties & Eggless Cakes',
     province: 'Northern Province',
     town: 'Jaffna',
@@ -192,6 +202,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-8',
     vendorName: 'Ratnapura Gem Cakes',
+    vendorLogo: LOGO('Ratnapura Gem Cakes'),
     title: 'Rich Chocolate Creations & Celebration Cakes',
     province: 'Sabaragamuwa Province',
     town: 'Ratnapura',
@@ -212,6 +223,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-9',
     vendorName: 'Trinco Temptations',
+    vendorLogo: LOGO('Trinco Temptations'),
     title: 'Tropical Fruit Cakes & Coconut Delights',
     province: 'Eastern Province',
     town: 'Trincomalee',
@@ -232,6 +244,7 @@ export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
     id: 'cake-10',
     vendorName: 'Kurunegala Crumbs',
+    vendorLogo: LOGO('Kurunegala Crumbs'),
     title: 'Home-style Bakes & Custom Party Cakes',
     province: 'North Western Province',
     town: 'Kurunegala',
