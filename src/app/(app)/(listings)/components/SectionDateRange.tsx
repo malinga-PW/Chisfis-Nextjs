@@ -22,8 +22,8 @@ const SectionDateRange = () => {
   return (
     <div className="listingSection__wrap">
       <div>
-        <SectionHeading>Availability</SectionHeading>
-        <SectionSubheading> Prices may increase on weekends or holidays</SectionSubheading>
+        <SectionHeading>Baker&apos;s Availability</SectionHeading>
+        <SectionSubheading>Select a date to check if the baker can take your order</SectionSubheading>
       </div>
       <Divider className="w-14!" />
 

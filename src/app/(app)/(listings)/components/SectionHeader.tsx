@@ -43,7 +43,7 @@ const SectionHeader = ({ address, host, listingCategory, reviewCount, reviewStar
             avatarSize="size-10"
           />
           <span className="ms-2.5 text-neutral-500 dark:text-neutral-400">
-            Hosted by <span className="font-medium text-neutral-900 dark:text-neutral-200">{host.displayName}</span>
+            Baked by <span className="font-medium text-neutral-900 dark:text-neutral-200">{host.displayName}</span>
           </span>
         </div>
       </div>
