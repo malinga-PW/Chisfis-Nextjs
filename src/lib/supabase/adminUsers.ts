@@ -126,21 +126,21 @@ const mapBuyerToDb = (buyer: BuyerRecord) => ({
 
 export async function fetchVendorsFromSupabase(): Promise<VendorRecord[] | null> {
   if (!isSupabaseConfigured || !supabase) return null
-  const { data, error } = await supabase.from('vendors').select('*').order('submitted_at', { ascending: false })
+  const { data, error } = await supabase.from('hl_vendors').select('*').order('submitted_at', { ascending: false })
   if (error) throw error
   return (data ?? []).map(mapVendorFromDb)
 }
 
 export async function fetchBuyersFromSupabase(): Promise<BuyerRecord[] | null> {
   if (!isSupabaseConfigured || !supabase) return null
-  const { data, error } = await supabase.from('buyers').select('*').order('joined_at', { ascending: false })
+  const { data, error } = await supabase.from('hl_buyers').select('*').order('joined_at', { ascending: false })
   if (error) throw error
   return (data ?? []).map(mapBuyerFromDb)
 }
 
 export async function upsertVendorToSupabase(vendor: VendorRecord): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return
-  const { error } = await supabase.from('vendors').upsert(mapVendorToDb(vendor), { onConflict: 'id' })
+  const { error } = await supabase.from('hl_vendors').upsert(mapVendorToDb(vendor), { onConflict: 'id' })
   if (error) throw error
 }
 
@@ -149,12 +149,12 @@ export async function updateVendorStatusInSupabase(
   status: 'Approved' | 'Rejected',
 ): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return
-  const { error } = await supabase.from('vendors').update({ status }).eq('id', id)
+  const { error } = await supabase.from('hl_vendors').update({ status }).eq('id', id)
   if (error) throw error
 }
 
 export async function upsertBuyerToSupabase(buyer: BuyerRecord): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return
-  const { error } = await supabase.from('buyers').upsert(mapBuyerToDb(buyer), { onConflict: 'id' })
+  const { error } = await supabase.from('hl_buyers').upsert(mapBuyerToDb(buyer), { onConflict: 'id' })
   if (error) throw error
 }

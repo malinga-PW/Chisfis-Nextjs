@@ -47,7 +47,7 @@ const mapMessageFromDb = (row: any): VendorBusinessEmailMessage => ({
 export async function fetchVendorBusinessEmailSettings(vendorId: string): Promise<VendorBusinessEmailSettings | null> {
   if (!isSupabaseConfigured || !supabase) return null
   const { data, error } = await supabase
-    .from('vendor_business_email_accounts')
+    .from('hl_vendor_business_email_accounts')
     .select('*')
     .eq('vendor_id', vendorId)
     .maybeSingle()
@@ -59,7 +59,7 @@ export async function fetchVendorBusinessEmailSettings(vendorId: string): Promis
 export async function upsertVendorBusinessEmailSettings(settings: VendorBusinessEmailSettings): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return
   const { error } = await supabase
-    .from('vendor_business_email_accounts')
+    .from('hl_vendor_business_email_accounts')
     .upsert(mapSettingsToDb(settings), { onConflict: 'vendor_id' })
   if (error) throw error
 }
@@ -67,7 +67,7 @@ export async function upsertVendorBusinessEmailSettings(settings: VendorBusiness
 export async function fetchVendorBusinessEmailInbox(vendorId: string): Promise<VendorBusinessEmailMessage[] | null> {
   if (!isSupabaseConfigured || !supabase) return null
   const { data, error } = await supabase
-    .from('vendor_business_email_messages')
+    .from('hl_vendor_business_email_messages')
     .select('*')
     .eq('vendor_id', vendorId)
     .order('received_at', { ascending: false })
@@ -79,7 +79,7 @@ export async function fetchVendorBusinessEmailInbox(vendorId: string): Promise<V
 export async function markVendorBusinessEmailAsRead(messageId: string): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return
   const { error } = await supabase
-    .from('vendor_business_email_messages')
+    .from('hl_vendor_business_email_messages')
     .update({ is_read: true })
     .eq('id', messageId)
   if (error) throw error
