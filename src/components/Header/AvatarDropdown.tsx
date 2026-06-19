@@ -7,23 +7,16 @@ import { Link } from '@/shared/link'
 import SwitchDarkMode2 from '@/shared/SwitchDarkMode2'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import {
+  Award04Icon,
   BulbChargingIcon,
   FavouriteIcon,
   Idea01Icon,
+  Location01Icon,
   Logout01Icon,
   Task01Icon,
   UserIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import {
-  ShoppingCartIcon,
-  HeartIcon,
-  StorefrontIcon,
-  ClipboardDocumentListIcon,
-  CurrencyDollarIcon,
-  Cog6ToothIcon,
-  BuildingStorefrontIcon,
-} from '@heroicons/react/24/outline'
 import { useState } from 'react'
 
 type UserRole = 'customer' | 'baker' | 'admin'
@@ -89,25 +82,25 @@ export default function AvatarDropdown({ className }: Props) {
               <>
                 <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <ClipboardDocumentListIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={UserIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">My Orders</p>
                 </Link>
                 <Link href="/cart" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <ShoppingCartIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={Location01Icon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Cart</p>
                 </Link>
                 <Link href="/account-savelists" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <HeartIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={FavouriteIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Wishlist</p>
                 </Link>
                 <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <Cog6ToothIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={Task01Icon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Account Settings</p>
                 </Link>
@@ -119,25 +112,25 @@ export default function AvatarDropdown({ className }: Props) {
               <>
                 <Link href="/authors/john-doe" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <StorefrontIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={UserIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Vendor Dashboard</p>
                 </Link>
                 <Link href="/authors/john-doe" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <BuildingStorefrontIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={Task01Icon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Manage Products</p>
                 </Link>
                 <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <ClipboardDocumentListIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={FavouriteIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">View Orders</p>
                 </Link>
                 <Link href="/account-billing" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <CurrencyDollarIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={Award04Icon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Earnings</p>
                 </Link>
@@ -149,19 +142,19 @@ export default function AvatarDropdown({ className }: Props) {
               <>
                 <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <StorefrontIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={UserIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Platform Dashboard</p>
                 </Link>
                 <Link href="/cakes" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <BuildingStorefrontIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={Task01Icon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Manage Bakers</p>
                 </Link>
                 <Link href="/account" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
-                    <Cog6ToothIcon className="h-6 w-6" />
+                    <HugeiconsIcon icon={FavouriteIcon} size={24} strokeWidth={1.5} />
                   </div>
                   <p className="ms-4 text-sm font-medium">Settings</p>
                 </Link>
