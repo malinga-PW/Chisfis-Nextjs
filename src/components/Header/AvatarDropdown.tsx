@@ -112,6 +112,12 @@ export default function AvatarDropdown({ className }: Props) {
                   </div>
                   <p className="ms-4 text-sm font-medium">Vendor Dashboard</p>
                 </Link>
+                <Link href="/vendor/profile" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                  <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
+                    <HugeiconsIcon icon={Idea01Icon} size={24} strokeWidth={1.5} />
+                  </div>
+                  <p className="ms-4 text-sm font-medium">Profile Settings</p>
+                </Link>
                 <Link href="/vendor/products" className="-m-3 flex items-center rounded-lg p-2 transition hover:bg-neutral-100 dark:hover:bg-neutral-700">
                   <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                     <HugeiconsIcon icon={Task01Icon} size={24} strokeWidth={1.5} />
