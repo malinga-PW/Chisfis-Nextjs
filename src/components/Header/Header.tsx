@@ -40,7 +40,7 @@ const Header: FC<HeaderProps> = async ({ hasBorderBottom = true, className }) =>
               <HamburgerBtnMenu />
             </div>
             <CurrLangDropdown currencies={currencies} languages={languages} className="hidden md:block" />
-            <Button className="-mx-1 py-1.75!" color="light" href={'/vendor/register'}>
+            <Button className="-mx-1 py-1.75!" color="light" href={'/vendor-register'}>
               Become a Baker
             </Button>
             <NotifyDropdown />

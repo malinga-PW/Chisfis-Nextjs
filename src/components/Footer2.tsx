@@ -26,7 +26,7 @@ const navigation: {
   ],
   company: [
     { name: 'About Us', href: '/' },
-    { name: 'For Bakers', href: '/vendor/register' },
+    { name: 'For Bakers', href: '/vendor-register' },
     { name: 'Careers', href: '/' },
     { name: 'Press', href: '/' },
   ],
