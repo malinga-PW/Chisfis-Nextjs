@@ -16,8 +16,9 @@ import {
 import { HugeiconsIcon, IconSvgElement } from '@hugeicons/react'
 import clsx from 'clsx'
 import _ from 'lodash'
-import { FC, useCallback, useEffect, useRef, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ClearDataButton } from './ClearDataButton'
+import { getAllSubAreaSuggestions } from '@/data/sri-lanka-locations'
 
 type Suggest = {
   id: string
@@ -25,55 +26,18 @@ type Suggest = {
   icon?: IconSvgElement
 }
 
-const demoInitSuggests: Suggest[] = [
-  {
-    id: '1',
-    name: 'Bangkok, Thailand',
-    icon: HutIcon,
-  },
-  {
-    id: '2',
-    name: 'Ueno, Taito, Tokyo',
-    icon: EiffelTowerIcon,
-  },
-  {
-    id: '3',
-    name: 'Ikebukuro, Toshima, Tokyo',
-    icon: TwinTowerIcon,
-  },
-  {
-    id: '4',
-    name: 'San Diego, CA',
-    icon: BeachIcon,
-  },
-  {
-    id: '5',
-    name: 'Humboldt Park, Chicago, IL',
-    icon: LakeIcon,
-  },
-]
+const sriLankaSuggests: Suggest[] = getAllSubAreaSuggestions().map((loc) => ({
+  id: loc.id,
+  name: `${loc.subArea}, ${loc.town}`,
+}))
 
-const demoSearchingSuggests: Suggest[] = [
-  {
-    id: '1',
-    name: 'San Diego, CA',
-  },
-  {
-    id: '2',
-    name: 'Humboldt Park, Chicago, IL',
-  },
-  {
-    id: '3',
-    name: 'Bangor, Northern Ireland',
-  },
-  {
-    id: '4',
-    name: 'New York, NY, United States',
-  },
-  {
-    id: '5',
-    name: 'Los Angeles, CA, United States',
-  },
+const demoInitSuggests: Suggest[] = [
+  { id: 'lk-province-1', name: 'Western Province', icon: BeachIcon },
+  { id: 'lk-province-2', name: 'Central Province', icon: HutIcon },
+  { id: 'lk-province-3', name: 'Southern Province', icon: BeachIcon },
+  { id: 'lk-province-4', name: 'Eastern Province', icon: LakeIcon },
+  { id: 'lk-province-5', name: 'North Western Province', icon: TwinTowerIcon },
+  { id: 'lk-province-6', name: 'Sabaragamuwa Province', icon: EiffelTowerIcon },
 ]
 
 const styles = {
@@ -107,11 +71,11 @@ interface Props {
 
 export const LocationInputField: FC<Props> = ({
   placeholder = T['HeroSearchForm']['Location'],
-  description = T['HeroSearchForm']['Where are you going?'],
+  description = 'Select your province, town, or area',
   className = 'flex-1',
   inputName = 'location',
   initSuggests = demoInitSuggests,
-  searchingSuggests = demoSearchingSuggests,
+  searchingSuggests = sriLankaSuggests,
   fieldStyle = 'default',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -158,7 +122,13 @@ export const LocationInputField: FC<Props> = ({
   }, [handleInputChange])
 
   const isShowInitSuggests = !selected?.id
-  const suggestsToShow = isShowInitSuggests ? initSuggests : searchingSuggests
+  const filteredSearching = useMemo(() => {
+    if (!selected?.name || !selected?.id) return searchingSuggests
+    return searchingSuggests.filter((s) =>
+      s.name.toLowerCase().includes(selected.name.toLowerCase()),
+    )
+  }, [selected, searchingSuggests])
+  const suggestsToShow = isShowInitSuggests ? initSuggests : filteredSearching
   return (
     <div
       className={`group relative z-10 flex ${className}`}

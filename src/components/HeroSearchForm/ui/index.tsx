@@ -6,6 +6,7 @@ import { LocationInputField } from './LocationInputField'
 import { PriceRangeInputField } from './PriceRangeInputField'
 import { PropertyTypeSelectField } from './PropertyTypeSelectField'
 import { VerticalDividerLine } from './VerticalDividerLine'
+import { TimePickerField } from './TimePickerField'
 
 export {
   ButtonSubmit,
@@ -16,4 +17,5 @@ export {
   PriceRangeInputField,
   PropertyTypeSelectField,
   VerticalDividerLine,
+  TimePickerField,
 }

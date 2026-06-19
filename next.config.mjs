@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbopack: {
+    root: process.cwd(),
+  },
   reactStrictMode: false,
   images: {
     minimumCacheTTL: 2678400 * 6, // 3 months

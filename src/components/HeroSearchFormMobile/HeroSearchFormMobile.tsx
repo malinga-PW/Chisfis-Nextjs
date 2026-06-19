@@ -13,13 +13,14 @@ import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTimeoutFn } from 'react-use'
-import { DateRangeField, LocationInputField } from '../HeroSearchForm/ui'
+import { DateRangeField, LocationInputField, TimePickerField } from '../HeroSearchForm/ui'
 
 const HeroSearchFormMobile = ({ className }: { className?: string }) => {
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   let [, , resetIsShowingDialog] = useTimeoutFn(() => setShowDialog(true), 1)
   const [showDialog, setShowDialog] = useState(false)
+  const [deliveryTime, setDeliveryTime] = useState('10:00 AM')
 
   function closeModal() {
     setShowModal(false)
@@ -85,7 +86,8 @@ const HeroSearchFormMobile = ({ className }: { className?: string }) => {
 
                   <div className="flex-1 space-y-6 pt-16">
                     <LocationInputField fieldStyle="default" />
-                    <DateRangeField fieldStyle="default" />
+                    <DateRangeField fieldStyle="default" isOnlySingleDate />
+                    <TimePickerField fieldStyle="default" value={deliveryTime} onChange={setDeliveryTime} />
                   </div>
 
                   <div className="flex justify-between border-t border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900">
