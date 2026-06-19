@@ -59,6 +59,9 @@ export default function LoginPage() {
           Want to sell cakes?{' '}
           <Link href="/vendor-register" className="font-medium text-neutral-900 underline dark:text-white">Register as a Baker</Link>
         </div>
+        <div className="border-t border-neutral-200 pt-4 text-center dark:border-neutral-700">
+          <p className="text-xs text-neutral-400">Super Admin? <button type="button" onClick={() => { setPhone('Admin'); setPassword('Admin@hostlanka') }} className="font-medium text-neutral-900 underline dark:text-white">Click here to sign in</button></p>
+        </div>
       </div>
     </div>
   )

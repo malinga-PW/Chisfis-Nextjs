@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import type { UserRole } from '@/contexts/AuthContext'
 import avatarImage from '@/images/avatars/Image-1.png'
 import Avatar from '@/shared/Avatar'
+import { Button } from '@/shared/Button'
 import { Divider } from '@/shared/divider'
 import { Link } from '@/shared/link'
 import SwitchDarkMode2 from '@/shared/SwitchDarkMode2'
@@ -32,7 +33,21 @@ const ROLE_LABELS: Record<UserRole, string> = {
 
 export default function AvatarDropdown({ className }: Props) {
   const { user, switchRole, logout } = useAuth()
-  if (!user) return null
+
+  if (!user) {
+    return (
+      <div className={className}>
+        <div className="flex items-center gap-2">
+          <Button color="light" href="/login" className="py-1.75! px-4! text-sm!">
+            Sign In
+          </Button>
+          <Button color="primary" href="/signup" className="py-1.75! px-4! text-sm!">
+            Register
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   const role = user.role
 

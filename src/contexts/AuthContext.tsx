@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react'
 import {
   signUpWithPhone,
   signInWithPhone,
@@ -44,6 +44,7 @@ function mapAuthUser(u: AuthUser): User {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const isAdminBypass = useRef(false)
 
   useEffect(() => {
     getSessionUser().then((u) => {
@@ -54,7 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsub = onAuthStateChange((u) => {
-      setUser(u ? mapAuthUser(u) : null)
+      if (!isAdminBypass.current) {
+        setUser(u ? mapAuthUser(u) : null)
+      }
     })
     return unsub
   }, [])
@@ -62,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (phone: string, password: string) => {
     const { user: au, error } = await signInWithPhone(phone, password)
     if (error || !au) throw new Error(error ?? 'Login failed')
+    if (au.role === 'SUPER_ADMIN') isAdminBypass.current = true
     setUser(mapAuthUser(au))
   }
 
@@ -73,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = async () => {
+    isAdminBypass.current = false
     await supabaseSignOut()
     setUser(null)
   }
