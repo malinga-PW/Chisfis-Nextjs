@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const user: User | null = session?.user
     ? {
-        id: session.user.id,
+        id: session.user.id || '',
         name: session.user.name || '',
         email: (session.user as any).phone || session.user.email || '',
         role: (session.user as any).role || 'BUYER',
