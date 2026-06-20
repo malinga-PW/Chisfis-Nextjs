@@ -10,6 +10,7 @@ function phoneToEmail(phone: string): string {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       name: 'credentials',
@@ -80,4 +81,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: 'jwt',
   },
   trustHost: true,
+  debug: process.env.NODE_ENV === 'development',
 })
