@@ -24,8 +24,11 @@ export default function VendorRegisterPage() {
     setBusy(true)
 
     let result: { error: string | null; userId: string | null }
+    let cleanedPhone = phone.replace(/[^0-9]/g, '').replace(/^0+/, '')
+    if (cleanedPhone.startsWith('94')) cleanedPhone = cleanedPhone.substring(2)
+    const formattedPhone = '+94' + cleanedPhone
     try {
-      result = await signup(phone, password, businessName, 'SELLER')
+      result = await signup(formattedPhone, password, businessName, 'SELLER')
     } catch (ex: any) {
       setError(ex?.message ?? 'Registration failed')
       setBusy(false)
@@ -43,12 +46,12 @@ export default function VendorRegisterPage() {
           id: result.userId,
           businessName,
           owner: businessName,
-          email: phone,
+          email: formattedPhone,
           location,
-          phone,
+          phone: formattedPhone,
           logo: '',
           ownerPhoto: '',
-          whatsappNumber: phone,
+          whatsappNumber: formattedPhone,
           whatsappAvailable: true,
           address: `${location}, Sri Lanka`,
           lat: 6.9271,
@@ -85,7 +88,12 @@ export default function VendorRegisterPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Phone Number <span className="text-red-500">*</span></label>
-            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+94 XX XXX XXXX" required className="mt-1 w-full rounded-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
+            <div className="mt-1 flex">
+              <span className="inline-flex items-center rounded-l-lg border border-r-0 border-neutral-200 bg-neutral-50 px-4 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+                +94
+              </span>
+              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ''))} placeholder="7X XXX XXXX" required className="w-full min-w-0 flex-1 rounded-none rounded-r-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
+            </div>
           </div>
           <div>
             <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Business Location <span className="text-red-500">*</span></label>

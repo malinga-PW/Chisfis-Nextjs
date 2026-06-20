@@ -20,8 +20,14 @@ export default function LoginPage() {
     setError('')
     setBusy(true)
     try {
+      let phoneVal = phoneRef.current?.value ?? ''
+      if (phoneVal && phoneVal !== 'Admin') {
+        let cleanedPhone = phoneVal.replace(/[^0-9]/g, '').replace(/^0+/, '')
+        if (cleanedPhone.startsWith('94')) cleanedPhone = cleanedPhone.substring(2)
+        phoneVal = '+94' + cleanedPhone
+      }
       await login(
-        phoneRef.current?.value ?? '',
+        phoneVal,
         passwordRef.current?.value ?? '',
       )
       router.push('/')
@@ -42,7 +48,12 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
           <div>
             <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Phone Number</label>
-            <input ref={phoneRef} type="tel" placeholder="+94 XX XXX XXXX" required className="mt-1 w-full rounded-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
+            <div className="mt-1 flex">
+              <span className="inline-flex items-center rounded-l-lg border border-r-0 border-neutral-200 bg-neutral-50 px-4 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+                +94
+              </span>
+              <input ref={phoneRef} type="tel" placeholder="7X XXX XXXX" required className="w-full min-w-0 flex-1 rounded-none rounded-r-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
+            </div>
           </div>
           <div>
             <div className="flex items-center justify-between text-neutral-800 dark:text-neutral-200">

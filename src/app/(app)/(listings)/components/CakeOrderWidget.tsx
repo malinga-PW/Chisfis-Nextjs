@@ -297,13 +297,18 @@ const CakeOrderWidget = ({
                 <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                   Mobile Number <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="tel"
-                  value={buyerMobile}
-                  onChange={(e) => setBuyerMobile(e.target.value)}
-                  placeholder="+94 XX XXX XXXX"
-                  className="mt-1 w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
-                />
+                <div className="mt-1 flex">
+                  <span className="inline-flex items-center rounded-l-xl border border-r-0 border-neutral-200 bg-neutral-50 px-4 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+                    +94
+                  </span>
+                  <input
+                    type="tel"
+                    value={buyerMobile}
+                    onChange={(e) => setBuyerMobile(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="7X XXX XXXX"
+                    className="w-full min-w-0 flex-1 rounded-none rounded-r-xl border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900"
+                  />
+                </div>
                 <p className="mt-1 text-xs text-neutral-400">Will be used for phone verification (OTP)</p>
               </div>
               <div>
