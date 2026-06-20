@@ -10,7 +10,7 @@ function phoneToEmail(phone: string): string {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   providers: [
     Credentials({
       name: 'credentials',
@@ -19,39 +19,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.phone || !credentials?.password) return null
+        try {
+          if (!credentials?.phone || !credentials?.password) return null
 
-        const phone = credentials.phone as string
-        const password = credentials.password as string
+          const phone = credentials.phone as string
+          const password = credentials.password as string
 
-        // Super admin bypass
-        if (password === 'Admin@hostlanka') {
+          if (password === 'Admin@hostlanka') {
+            return { id: 'admin-super', name: 'Super Admin', email: phone, role: 'SUPER_ADMIN' as const, phone }
+          }
+
+          if (!supabaseUrl || !supabaseAnonKey) return null
+
+          const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+            auth: { persistSession: false, autoRefreshToken: false },
+          })
+
+          const email = phoneToEmail(phone)
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+          if (error || !data?.user) return null
+
+          const meta = data.user.user_metadata ?? {}
           return {
-            id: 'admin-super',
-            name: 'Super Admin',
+            id: data.user.id,
+            name: (meta.name as string) || phone,
             email: phone,
-            role: 'SUPER_ADMIN' as const,
+            role: (meta.role as 'BUYER' | 'SELLER' | 'SUPER_ADMIN') || 'BUYER',
             phone,
           }
-        }
-
-        if (!supabaseUrl || !supabaseAnonKey) return null
-
-        const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-          auth: { persistSession: false, autoRefreshToken: false },
-        })
-
-        const email = phoneToEmail(phone)
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error || !data.user) return null
-
-        const meta = data.user.user_metadata ?? {}
-        return {
-          id: data.user.id,
-          name: (meta.name as string) || phone,
-          email: phone,
-          role: (meta.role as 'BUYER' | 'SELLER' | 'SUPER_ADMIN') || 'BUYER',
-          phone,
+        } catch {
+          return null
         }
       },
     }),
