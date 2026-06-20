@@ -16,6 +16,8 @@ interface Props {
   selectionMode?: 'marker' | 'center'
   radiusKm?: number
   highlightRadius?: boolean
+  radiusCenterLat?: number
+  radiusCenterLng?: number
 }
 
 const DEFAULT_CENTER: [number, number] = [79.8612, 6.9271]
@@ -135,6 +137,8 @@ export const DeliveryMap = ({
   selectionMode = 'marker',
   radiusKm,
   highlightRadius = false,
+  radiusCenterLat,
+  radiusCenterLng,
 }: Props) => {
   const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: initialLat, lng: initialLng })
   const [isLocating, setIsLocating] = useState(false)
@@ -202,7 +206,7 @@ export const DeliveryMap = ({
               </MarkerContent>
             </MapMarker>
           )}
-          {shouldShowRadius && <RadiusOverlay lat={position.lat} lng={position.lng} radiusKm={radiusKm as number} visible={shouldShowRadius} />}
+          {shouldShowRadius && <RadiusOverlay lat={radiusCenterLat ?? position.lat} lng={radiusCenterLng ?? position.lng} radiusKm={radiusKm as number} visible={shouldShowRadius} />}
           <MapControls showZoom showLocate={false} />
         </Map>
       </div>

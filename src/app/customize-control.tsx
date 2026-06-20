@@ -15,8 +15,15 @@ const homePages = [
   { name: 'Home 2', slug: '/home-2' },
 ]
 
+import { useAuth } from '@/contexts/AuthContext'
+
 const CustomizeControl = () => {
   const pathname = usePathname()
+  const { user } = useAuth()
+
+  if (user?.role !== 'SUPER_ADMIN') {
+    return null
+  }
 
   const renderSwitchDarkMode = () => {
     return (

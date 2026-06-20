@@ -201,7 +201,16 @@ const CakeOrderWidget = ({
               />
             </div>
             <div className="mt-3">
-              <DeliveryMap onLocationChange={(latitude, longitude) => { setLat(latitude); setLng(longitude) }} height="h-56" />
+              <DeliveryMap 
+                onLocationChange={(latitude, longitude) => { setLat(latitude); setLng(longitude) }} 
+                height="h-56" 
+                initialLat={vendorLat}
+                initialLng={vendorLng}
+                radiusKm={vendorDeliveryMode === 'radius' ? vendorDeliveryRadiusKm : undefined}
+                highlightRadius={vendorDeliveryMode === 'radius'}
+                radiusCenterLat={vendorLat}
+                radiusCenterLng={vendorLng}
+              />
             </div>
           </div>
         )}
