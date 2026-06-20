@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { upsertBuyerToSupabase } from '@/lib/supabase/adminUsers'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import Logo from '@/shared/Logo'
 import Link from 'next/link'
@@ -9,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function SignupPage() {
-  const { signup } = useAuth()
+  const { login } = useAuth()
   const router = useRouter()
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -25,26 +24,20 @@ export default function SignupPage() {
       let cleanedPhone = phone.replace(/[^0-9]/g, '').replace(/^0+/, '')
       if (cleanedPhone.startsWith('94')) cleanedPhone = cleanedPhone.substring(2)
       const formattedPhone = '+94' + cleanedPhone
-      const { error: err, userId } = await signup(formattedPhone, password, name, 'BUYER')
-      if (err) {
-        setError(err)
+
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: formattedPhone, password, name, role: 'BUYER' }),
+      })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
         setBusy(false)
         return
       }
-      if (userId) {
-        try {
-          await upsertBuyerToSupabase({
-            id: userId,
-            name,
-            email: formattedPhone,
-            phone: formattedPhone,
-            orders: 0,
-            joined: new Date().toISOString().slice(0, 10),
-          })
-        } catch {
-          // best-effort
-        }
-      }
+
+      await login(formattedPhone, password)
       router.push('/')
     } catch (err: any) {
       setError(err?.message ?? 'Registration failed')

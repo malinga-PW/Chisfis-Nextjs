@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { upsertVendorToSupabase } from '@/lib/supabase/adminUsers'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import Logo from '@/shared/Logo'
 import Link from 'next/link'
@@ -9,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function VendorRegisterPage() {
-  const { signup } = useAuth()
+  const { login } = useAuth()
   const router = useRouter()
   const [businessName, setBusinessName] = useState('')
   const [phone, setPhone] = useState('')
@@ -23,54 +22,36 @@ export default function VendorRegisterPage() {
     setError('')
     setBusy(true)
 
-    let result: { error: string | null; userId: string | null }
     let cleanedPhone = phone.replace(/[^0-9]/g, '').replace(/^0+/, '')
     if (cleanedPhone.startsWith('94')) cleanedPhone = cleanedPhone.substring(2)
     const formattedPhone = '+94' + cleanedPhone
+
     try {
-      result = await signup(formattedPhone, password, businessName, 'SELLER')
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: formattedPhone,
+          password,
+          name: businessName,
+          role: 'SELLER',
+          businessName,
+          location,
+        }),
+      })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
+        setBusy(false)
+        return
+      }
+
+      await login(formattedPhone, password)
+      router.push('/vendor/dashboard')
     } catch (ex: any) {
       setError(ex?.message ?? 'Registration failed')
       setBusy(false)
-      return
     }
-    if (result.error) {
-      setError(result.error)
-      setBusy(false)
-      return
-    }
-
-    if (result.userId) {
-      try {
-        await upsertVendorToSupabase({
-          id: result.userId,
-          businessName,
-          owner: businessName,
-          email: formattedPhone,
-          location,
-          phone: formattedPhone,
-          logo: '',
-          ownerPhoto: '',
-          whatsappNumber: formattedPhone,
-          whatsappAvailable: true,
-          address: `${location}, Sri Lanka`,
-          lat: 6.9271,
-          lng: 79.8612,
-          deliveryMode: 'areas',
-          deliveryAreas: [],
-          deliveryRadiusKm: 10,
-          visibility: { ownerName: true, phone: true, address: true, deliveryInfo: true, whatsapp: true },
-          products: [],
-          improvementNotes: '',
-          status: 'Pending',
-          submitted: new Date().toISOString(),
-        })
-      } catch {
-        // vendor record best-effort
-      }
-    }
-
-    router.push('/vendor/dashboard')
   }
 
   return (
