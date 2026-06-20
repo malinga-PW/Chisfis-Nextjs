@@ -30,15 +30,25 @@ export default function SignupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: formattedPhone, password, name, role: 'BUYER' }),
       })
-      const data = await res.json()
-      if (data.error) {
-        setError(data.error)
-        setBusy(false)
-        return
-      }
 
-      await login(formattedPhone, password)
-      router.push('/')
+      const textData = await res.text()
+      console.log('Backend response:', textData)
+
+      try {
+        const data = JSON.parse(textData)
+        if (data.error) {
+          setError(data.error)
+          setBusy(false)
+          return
+        }
+
+        await login(formattedPhone, password)
+        router.push('/')
+      } catch (parseErr) {
+        console.error('Not JSON. Raw response:', textData)
+        setError('Server error. Check console.')
+        setBusy(false)
+      }
     } catch (err: any) {
       setError(err?.message ?? 'Registration failed')
       setBusy(false)
