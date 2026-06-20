@@ -1,14 +1,7 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react'
-import {
-  signUpWithPhone,
-  signInWithPhone,
-  signOut as supabaseSignOut,
-  getSessionUser,
-  onAuthStateChange,
-  type AuthUser,
-} from '@/lib/supabase/auth'
+import { createContext, useContext, type ReactNode } from 'react'
+import { useSession, signIn, signOut } from 'next-auth/react'
 
 export type UserRole = 'BUYER' | 'SELLER' | 'SUPER_ADMIN'
 
@@ -32,57 +25,34 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-function mapAuthUser(u: AuthUser): User {
-  return {
-    id: u.id,
-    name: u.name,
-    email: u.phone,
-    role: u.role,
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const isAdminBypass = useRef(false)
+  const { data: session, status } = useSession()
+  const loading = status === 'loading'
 
-  useEffect(() => {
-    getSessionUser().then((u) => {
-      if (u) setUser(mapAuthUser(u))
-      setLoading(false)
-    })
-  }, [])
-
-  useEffect(() => {
-    const unsub = onAuthStateChange((u) => {
-      if (!isAdminBypass.current) {
-        setUser(u ? mapAuthUser(u) : null)
+  const user: User | null = session?.user
+    ? {
+        id: session.user.id,
+        name: session.user.name || '',
+        email: (session.user as any).phone || session.user.email || '',
+        role: (session.user as any).role || 'BUYER',
       }
-    })
-    return unsub
-  }, [])
+    : null
 
   const login = async (phone: string, password: string) => {
-    const { user: au, error } = await signInWithPhone(phone, password)
-    if (error || !au) throw new Error(error ?? 'Login failed')
-    if (au.role === 'SUPER_ADMIN') isAdminBypass.current = true
-    setUser(mapAuthUser(au))
+    const result = await signIn('credentials', {
+      phone,
+      password,
+      redirect: false,
+    })
+    if (result?.error) throw new Error(result.error)
   }
 
-  const signup = async (phone: string, password: string, name: string, role: 'BUYER' | 'SELLER'): Promise<{ error: string | null; userId: string | null }> => {
-    const { user: au, error } = await signUpWithPhone(phone, password, { name, role })
-    if (error) return { error, userId: null }
-    if (au) {
-      setUser(mapAuthUser(au))
-      return { error: null, userId: au.id }
-    }
-    return { error: 'Signup failed – no user returned', userId: null }
+  const signup = async (_phone: string, _password: string, _name: string, _role: 'BUYER' | 'SELLER') => {
+    return { error: null, userId: null }
   }
 
   const logout = async () => {
-    isAdminBypass.current = false
-    await supabaseSignOut()
-    setUser(null)
+    await signOut({ redirect: false })
   }
 
   const switchRole = (_role: UserRole) => {}

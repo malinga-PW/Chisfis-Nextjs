@@ -1,3 +1,4 @@
+import SessionProvider from '@/components/SessionProvider'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { DirectionProvider } from '@/components/ui/direction'
@@ -36,18 +37,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             dir={process.env.NEXT_PUBLIC_THEME_DIR || 'ltr'}
             direction={process.env.NEXT_PUBLIC_THEME_DIR || 'ltr'}
           >
-            <AuthProvider>
-            <NotificationProvider>
-            <div>
-              {children}
-              <FloatingActions />
-              <SpeedInsights />
+            <SessionProvider>
+              <AuthProvider>
+                <NotificationProvider>
+                  <div>
+                    {children}
+                    <FloatingActions />
+                    <SpeedInsights />
 
-              {/* For Chisfis's demo  -- you can remove it  */}
-              <CustomizeControl />
-            </div>
-            </NotificationProvider>
-            </AuthProvider>
+                    {/* For Chisfis's demo  -- you can remove it  */}
+                    <CustomizeControl />
+                  </div>
+                </NotificationProvider>
+              </AuthProvider>
+            </SessionProvider>
           </DirectionProvider>
         </ThemeProvider>
       </body>

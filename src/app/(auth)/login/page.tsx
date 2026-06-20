@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { signIn } from 'next-auth/react'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import Logo from '@/shared/Logo'
 import Link from 'next/link'
@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 
 export default function LoginPage() {
-  const { login } = useAuth()
   const router = useRouter()
   const phoneRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
@@ -26,11 +25,18 @@ export default function LoginPage() {
         if (cleanedPhone.startsWith('94')) cleanedPhone = cleanedPhone.substring(2)
         phoneVal = '+94' + cleanedPhone
       }
-      await login(
-        phoneVal,
-        passwordRef.current?.value ?? '',
-      )
+      const result = await signIn('credentials', {
+        phone: phoneVal,
+        password: passwordRef.current?.value ?? '',
+        redirect: false,
+      })
+      if (result?.error) {
+        setError('Login failed')
+        setBusy(false)
+        return
+      }
       router.push('/')
+      router.refresh()
     } catch (err: any) {
       setError(err.message ?? 'Login failed')
     } finally {
