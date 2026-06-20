@@ -72,6 +72,28 @@ export async function POST(request: Request) {
       })
     }
 
+    // --- n8n Webhook Trigger (non-blocking) ---
+    try {
+      const N8N_WEBHOOK_URL = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || ''
+      if (N8N_WEBHOOK_URL) {
+        fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            role,
+            name,
+            phone,
+            businessName: businessName || 'N/A',
+            location: location || 'N/A',
+          }),
+        }).catch((e) => console.log('n8n trigger failed, but user was created:', e))
+      }
+    } catch (e) {
+      // n8n failed but signup continues
+    }
+    // --- End n8n Webhook Trigger ---
+
     return NextResponse.json({ userId, error: null })
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Signup failed' }, { status: 500 })
