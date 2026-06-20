@@ -34,8 +34,12 @@ export default function SignupPage() {
       const textData = await res.text()
       console.log('Backend response:', textData)
 
+      const jsonStart = textData.indexOf('{')
+      const jsonEnd = textData.lastIndexOf('}')
+      const cleanJson = jsonStart !== -1 && jsonEnd !== -1 ? textData.slice(jsonStart, jsonEnd + 1) : textData
+
       try {
-        const data = JSON.parse(textData)
+        const data = JSON.parse(cleanJson)
         if (data.error) {
           setError(data.error)
           setBusy(false)
@@ -45,7 +49,7 @@ export default function SignupPage() {
         await login(formattedPhone, password)
         router.push('/')
       } catch (parseErr) {
-        console.error('Not JSON. Raw response:', textData)
+        console.error('Raw response:', textData, '| Cleaned:', cleanJson)
         setError('Server error. Check console.')
         setBusy(false)
       }
