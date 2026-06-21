@@ -57,6 +57,8 @@ export async function GET() {
       'http://kong:8000/auth/v1/health',
       'http://supabase_kong:8000/auth/v1/health',
       'http://supabasekong:8000/auth/v1/health',
+      // Coolify full container name (service-uuid format)
+      'http://supabasekong-uh7w2lgy5fmp5c7c5rjprb3c:8000/auth/v1/health',
       // Coolify typically uses container names like {service}-{uuid}
       'http://localhost:54321/auth/v1/health',
       'http://127.0.0.1:54321/auth/v1/health',
@@ -65,7 +67,19 @@ export async function GET() {
       // Try direct internal IP (server's own IP)
       'http://46.202.164.69:8000/auth/v1/health',
       'http://46.202.164.69:54321/auth/v1/health',
+      // Supabase default self-hosted ports
+      'http://localhost:3000/auth/v1/health',
+      'http://localhost:9999/health',
+      'http://127.0.0.1:9999/health',
     ]
+
+    // Also try to get network info
+    try {
+      const { execSync } = await import('child_process')
+      results.networkInfo = execSync('ip route 2>/dev/null || route print 2>/dev/null | head -20', { timeout: 3000 }).toString().slice(0, 500)
+    } catch (e: any) {
+      results.networkInfo = e.message?.slice(0, 100) || 'unavailable'
+    }
 
     results.alternateUrls = {}
     for (const url of alternates) {
