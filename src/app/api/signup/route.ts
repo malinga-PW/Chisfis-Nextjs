@@ -10,8 +10,21 @@ function phoneToEmail(phone: string): string {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { phone, password, name, role, businessName, location } = body
+    const raw = await request.text()
+    console.log('signup raw body:', raw)
+
+    const parseStart = raw.indexOf('{')
+    const parseEnd = raw.lastIndexOf('}')
+    const cleanBody = parseStart !== -1 && parseEnd !== -1 ? raw.slice(parseStart, parseEnd + 1) : raw
+
+    let parsed: any
+    try {
+      parsed = JSON.parse(cleanBody)
+    } catch {
+      return NextResponse.json({ error: `Invalid JSON in request body. Raw: ${raw.slice(0, 100)}` }, { status: 400 })
+    }
+
+    const { phone, password, name, role, businessName, location } = parsed
 
     if (!phone || !password || !name || !role) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
