@@ -52,7 +52,7 @@ export async function fetchVendorProfile(vendorId: string): Promise<Partial<Vend
   if (!cl) return null
 
   const { data, error } = await cl
-    .from('vendors')
+    .from('hl_vendors')
     .select('*')
     .eq('id', vendorId)
     .maybeSingle()
@@ -152,7 +152,7 @@ export async function upsertVendorProfile(vendorId: string, profile: VendorProfi
   }
 
   const { error } = await cl
-    .from('vendors')
+    .from('hl_vendors')
     .upsert(payload, { onConflict: 'id' })
 
   if (error) {

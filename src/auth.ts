@@ -6,7 +6,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 function phoneToEmail(phone: string): string {
-  return `${phone.replace(/[^0-9]/g, '')}@chisfis.local`
+  return `${phone.replace(/[^0-9]/g, '')}@hostlanka.local`
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -45,7 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           // Fetch avatar from DB based on role
           let avatar = ''
           if (role === 'SELLER') {
-            const { data: vendorData } = await supabase.from('vendors').select('logo_url, owner_photo_url').eq('id', data.user.id).maybeSingle()
+            const { data: vendorData } = await supabase.from('hl_vendors').select('logo_url, owner_photo_url').eq('id', data.user.id).maybeSingle()
             avatar = vendorData?.owner_photo_url || vendorData?.logo_url || ''
           }
 

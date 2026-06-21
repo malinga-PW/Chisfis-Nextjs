@@ -11,7 +11,7 @@ export interface AuthUser {
 const ADMIN_PASSWORD = 'Admin@hostlanka'
 
 function phoneToEmail(phone: string): string {
-  return `${phone.replace(/[^0-9]/g, '')}@chisfis.local`
+  return `${phone.replace(/[^0-9]/g, '')}@hostlanka.local`
 }
 
 function adminLogin(phone: string, password: string): { user: AuthUser | null; error: string | null } {

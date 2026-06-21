@@ -390,14 +390,18 @@ export default function VendorProfilePage() {
         // Update the session so the new avatar reflects in the navbar
         await update({ avatar: profile.ownerPhoto || profile.logo })
         setEmailSyncStatus('ready')
-      } catch (_error) {
+        
+        await new Promise((r) => setTimeout(r, 700))
+        setSaving(false)
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2800)
+      } catch (error) {
+        console.error("Failed to save profile:", error)
         setEmailSyncStatus('error')
+        setSaving(false)
+        alert("Failed to save profile. Please check the console for details.")
       }
     }
-    await new Promise((r) => setTimeout(r, 700))
-    setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2800)
   }
 
   const handleImageUpload = useCallback((file: File, key: 'logo' | 'ownerPhoto') => {
