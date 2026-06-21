@@ -1,0 +1,100 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lankaonline-onboarding",
+        "options": {}
+      },
+      "name": "Onboarding Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [-544, 160],
+      "webhookId": "chisfis-onboarding-hook",
+      "typeVersion": 1,
+      "id": "59da1652-5fdb-4b9b-8c82-288a65c2f6f9"
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.body.role}}",
+        "rules": {
+          "rules": [
+            { "value2": "SELLER" },
+            { "value2": "BUYER", "output": 1 }
+          ]
+        }
+      },
+      "name": "Check Role (Buyer or Seller)",
+      "type": "n8n-nodes-base.switch",
+      "position": [-304, 160],
+      "typeVersion": 1,
+      "id": "f82dbfa7-db7b-444a-9ace-6bb23362d601"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_ADMIN_TELEGRAM_CHAT_ID",
+        "text": "=🏪 <b>New Vendor Registration!</b>\n\n<b>Name:</b> {{$json.body.name}}\n<b>Business:</b> {{$json.body.businessName}}\n<b>Phone:</b> {{$json.body.phone}}\n<b>Location:</b> {{$json.body.location}}\n\n<i>Please check the Supabase dashboard to verify and approve this vendor.</i>",
+        "additionalFields": {}
+      },
+      "name": "Alert Admin (New Vendor)",
+      "type": "n8n-nodes-base.telegram",
+      "position": [0, 0],
+      "typeVersion": 1,
+      "id": "b861ab00-e898-4843-a185-dffa5d5185bf",
+      "credentials": {
+        "telegramApi": {
+          "id": "WVBBoFi9IJ1S1utX",
+          "name": "Zara.AI (Cupzo Tea)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_ADMIN_TELEGRAM_CHAT_ID",
+        "text": "=👤 <b>New Buyer Registered!</b>\n\n<b>Name:</b> {{$json.body.name}}\n<b>Phone:</b> {{$json.body.phone}}",
+        "additionalFields": {}
+      },
+      "name": "Alert Admin (New Buyer)",
+      "type": "n8n-nodes-base.telegram",
+      "position": [0, 304],
+      "typeVersion": 1,
+      "id": "2f4abba5-acf0-4f4a-a755-914d571014a9",
+      "credentials": {
+        "telegramApi": {
+          "id": "DNiJTM0v8jgGO5cL",
+          "name": "@WaveScalp_Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.notify.lk/api/v1/send",
+        "options": {}
+      },
+      "name": "Send Welcome SMS (Optional)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [256, 0],
+      "typeVersion": 1,
+      "id": "c3e0f1b5-0b3a-4f69-bdd1-59aacba877df"
+    }
+  ],
+  "connections": {
+    "Onboarding Webhook": {
+      "main": [[{ "node": "Check Role (Buyer or Seller)", "type": "main", "index": 0 }]]
+    },
+    "Check Role (Buyer or Seller)": {
+      "main": [
+        [{ "node": "Alert Admin (New Vendor)", "type": "main", "index": 0 }],
+        [{ "node": "Alert Admin (New Buyer)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Alert Admin (New Vendor)": {
+      "main": [[{ "node": "Send Welcome SMS (Optional)", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6adb643dd7d273b3a3c36a8c88a219f6c6362a719fc19640e0a85fd38028bd01"
+  }
+}
