@@ -55,6 +55,16 @@ export async function GET() {
       'http://127.0.0.1:8000/auth/v1/health',
       'http://supabase-kong:8000/auth/v1/health',
       'http://kong:8000/auth/v1/health',
+      'http://supabase_kong:8000/auth/v1/health',
+      'http://supabasekong:8000/auth/v1/health',
+      // Coolify typically uses container names like {service}-{uuid}
+      'http://localhost:54321/auth/v1/health',
+      'http://127.0.0.1:54321/auth/v1/health',
+      // Try the sslip.io URL with explicit port
+      'http://supabasekong-uh7w2lgy5fmp5c7c5rjprb3c.46.202.164.69.sslip.io:8000/auth/v1/health',
+      // Try direct internal IP (server's own IP)
+      'http://46.202.164.69:8000/auth/v1/health',
+      'http://46.202.164.69:54321/auth/v1/health',
     ]
 
     results.alternateUrls = {}
