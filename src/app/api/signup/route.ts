@@ -8,34 +8,56 @@ function phoneToEmail(phone: string): string {
   return `${phone.replace(/[^0-9]/g, '')}@chisfis.local`
 }
 
-function safeJsonParse(text: string): { ok: true; data: any } | { ok: false; error: string } {
-  const start = text.indexOf('{')
-  const end = text.lastIndexOf('}')
-  const clean = start !== -1 && end !== -1 ? text.slice(start, end + 1) : text
-  try {
-    return { ok: true, data: JSON.parse(clean) }
-  } catch {
-    return { ok: false, error: `JSON parse failed. Clean length: ${clean.length}, raw: ${text.slice(0, 200)}` }
-  }
-}
-
 export async function POST(request: Request) {
   try {
-    const raw = await request.text()
-    console.log('signup raw body:', raw)
-
-    const parsed = safeJsonParse(raw)
-    if (!parsed.ok) {
-      return NextResponse.json({ error: parsed.error }, { status: 400 })
+    // Parse JSON body — Next.js handles Content-Type and body parsing
+    let body: any
+    try {
+      body = await request.json()
+    } catch (parseErr: any) {
+      // Fallback: read as text and manually parse
+      const text = await request.text().catch(() => '')
+      try {
+        const start = text.indexOf('{')
+        const end = text.lastIndexOf('}')
+        if (start !== -1 && end !== -1) {
+          body = JSON.parse(text.slice(start, end + 1))
+        } else {
+          return NextResponse.json(
+            { error: `Invalid JSON body. Received: ${text.slice(0, 100)}` },
+            { status: 400 }
+          )
+        }
+      } catch {
+        return NextResponse.json(
+          { error: `Failed to parse request body: ${parseErr?.message}` },
+          { status: 400 }
+        )
+      }
     }
 
-    const { phone, password, name, role, businessName, location } = parsed.data
+    const { phone, password, name, role, businessName, location } = body ?? {}
 
     if (!phone || !password || !name || !role) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
-    if (!supabaseUrl || !serviceKey) {
-      return NextResponse.json({ error: 'Supabase service key not configured' }, { status: 500 })
+
+    if (!supabaseUrl) {
+      return NextResponse.json({ error: 'NEXT_PUBLIC_SUPABASE_URL not configured' }, { status: 500 })
+    }
+
+    if (!serviceKey) {
+      return NextResponse.json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' }, { status: 500 })
+    }
+
+    if (serviceKey.includes('dummy')) {
+      return NextResponse.json(
+        {
+          error:
+            'SUPABASE_SERVICE_ROLE_KEY is a placeholder. Set the real service role key in your server environment variables (not .env.local — set it in PM2 ecosystem config, systemd env file, or server .env).',
+        },
+        { status: 500 }
+      )
     }
 
     const supabase = createClient(supabaseUrl, serviceKey, {
@@ -43,27 +65,27 @@ export async function POST(request: Request) {
     })
 
     const email = phoneToEmail(phone)
-    const emailForLog = email
 
     let authData: any
     try {
-      const resp = await supabase.auth.admin.createUser({
+      authData = await supabase.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
         user_metadata: { name, role, phone },
       })
-      authData = resp
     } catch (supabaseErr: any) {
       console.error('Supabase createUser threw:', supabaseErr?.message)
-      const hint = serviceKey.includes('dummy')
-        ? 'SUPABASE_SERVICE_ROLE_KEY appears to be a placeholder (contains "dummy"). Set the real key in Vercel env vars.'
-        : `Supabase connection error: ${supabaseErr?.message || 'unknown'}`
-      return NextResponse.json({ error: hint, supabaseUrl, emailForLog }, { status: 500 })
+      return NextResponse.json(
+        { error: `Supabase connection error: ${supabaseErr?.message || 'unknown'}` },
+        { status: 500 }
+      )
     }
 
     if (authData.error || !authData.data?.user) {
-      return NextResponse.json({ error: authData.error?.message || 'Failed to create user in Supabase' }, { status: 400 })
+      const errMsg = authData.error?.message || 'Failed to create user in Supabase'
+      console.error('Supabase createUser error:', errMsg)
+      return NextResponse.json({ error: errMsg }, { status: 400 })
     }
 
     const userId = authData.data.user.id
@@ -105,13 +127,17 @@ export async function POST(request: Request) {
       }
     } catch (dbErr: any) {
       console.error('Supabase upsert threw:', dbErr?.message)
-      return NextResponse.json({ error: `User created but failed to save profile: ${dbErr?.message}` }, { status: 500 })
+      return NextResponse.json(
+        { error: `User created but failed to save profile: ${dbErr?.message}` },
+        { status: 500 }
+      )
     }
 
     // --- n8n Webhook Trigger (non-blocking) ---
     try {
       const N8N_WEBHOOK_URL =
-        process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 'https://n8n.pixelwave.lk/webhook/lankaonline-onboarding'
+        process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
+        'https://n8n.pixelwave.lk/webhook/lankaonline-onboarding'
 
       fetch(N8N_WEBHOOK_URL, {
         method: 'POST',
