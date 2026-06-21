@@ -40,12 +40,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (error || !data?.user) return null
 
           const meta = data.user.user_metadata ?? {}
+          const role = (meta.role as 'BUYER' | 'SELLER' | 'SUPER_ADMIN') || 'BUYER'
+
+          // Fetch avatar from DB based on role
+          let avatar = ''
+          if (role === 'SELLER') {
+            const { data: vendorData } = await supabase.from('vendors').select('logo_url, owner_photo_url').eq('id', data.user.id).maybeSingle()
+            avatar = vendorData?.owner_photo_url || vendorData?.logo_url || ''
+          }
+
           return {
             id: data.user.id,
             name: (meta.name as string) || phone,
             email: phone,
-            role: (meta.role as 'BUYER' | 'SELLER' | 'SUPER_ADMIN') || 'BUYER',
+            role,
             phone,
+            avatar,
           }
         } catch {
           return null
@@ -54,11 +64,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id
         token.role = (user as any).role
         token.phone = (user as any).phone
+        token.avatar = (user as any).avatar
+      }
+      if (trigger === 'update' && session?.avatar !== undefined) {
+        token.avatar = session.avatar
       }
       return token
     },
@@ -67,6 +81,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string
         ;(session.user as any).role = token.role
         ;(session.user as any).phone = token.phone
+        ;(session.user as any).avatar = token.avatar
       }
       return session
     },

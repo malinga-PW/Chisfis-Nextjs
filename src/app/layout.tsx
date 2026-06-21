@@ -16,8 +16,8 @@ const poppins = Poppins({ subsets: ['latin'], variable: '--font-sans', weight: [
 
 export const metadata: Metadata = {
   title: {
-    template: '%s - Nimru',
-    default: 'Nimru - Local Food Marketplace',
+    template: '%s - Hostlanka.online',
+    default: 'Hostlanka.online - Local Food Marketplace',
   },
   description: 'Discover and order fresh homemade food from local vendors near you. Multi-vendor food marketplace.',
   keywords: ['Food Marketplace', 'Local Food', 'Homemade Food', 'Food Delivery', 'Sri Lanka', 'Order Food Online'],

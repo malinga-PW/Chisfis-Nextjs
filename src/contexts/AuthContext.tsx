@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: session.user.name || '',
         email: (session.user as any).phone || session.user.email || '',
         role: (session.user as any).role || 'BUYER',
+        avatar: (session.user as any).avatar,
       }
     : null
 

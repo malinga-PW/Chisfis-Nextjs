@@ -75,11 +75,11 @@ export default function VendorRegisterPage() {
       </div>
       <div className="mx-auto max-w-lg space-y-6">
         <h1 className="text-2xl font-semibold text-center">Register as a Baker</h1>
-        <p className="text-center text-sm text-neutral-500">Start selling custom cakes on Nimru Cakes.</p>
+        <p className="text-center text-sm text-neutral-500">Start selling custom cakes on Hostlanka.online.</p>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5">
           <div>
             <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Business Name <span className="text-red-500">*</span></label>
-            <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Nimru Cakes" required className="mt-1 w-full rounded-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
+            <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Hostlanka Business" required className="mt-1 w-full rounded-lg border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900" />
           </div>
           <div>
             <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Phone Number <span className="text-red-500">*</span></label>

@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   }
 
   return {
-    title: 'Nimru Cakes - Custom Cake Vendor',
+    title: 'Hostlanka Business - Custom Cake Vendor',
     description: 'Custom cakes and pastries crafted with love in Athurugiriya, Colombo.',
   }
 }
@@ -77,7 +77,7 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
         listingCategory="Cake Vendor"
         reviewCount={reviewCount}
         reviewStart={reviewStart}
-        title="Nimru Cakes"
+        title="Hostlanka Business"
       >
         <div className="flex flex-col items-center space-y-3 text-center sm:flex-row sm:space-y-0 sm:gap-x-3 sm:text-start">
           <span className="text-sm">Custom Cakes &amp; Pastries</span>

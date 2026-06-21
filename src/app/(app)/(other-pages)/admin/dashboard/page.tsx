@@ -16,7 +16,7 @@ const RECENT_ACTIVITY = [
   { action: 'New vendor registration', detail: 'Kandy Cake House', time: '2 hours ago' },
   { action: 'Order placed', detail: 'ORD-004 - 3-Tier Wedding Cake', time: '3 hours ago' },
   { action: 'Vendor verified', detail: 'Sweet Cravings', time: '1 day ago' },
-  { action: 'Product approved', detail: 'Chocolate Fudge Cake by Nimru Cakes', time: '1 day ago' },
+  { action: 'Product approved', detail: 'Chocolate Fudge Cake by Hostlanka Business', time: '1 day ago' },
   { action: 'New buyer registered', detail: 'Alice Perera', time: '2 days ago' },
 ]
 

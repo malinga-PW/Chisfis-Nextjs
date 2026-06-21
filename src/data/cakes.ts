@@ -49,9 +49,9 @@ const gallery = (main: string): string[] => {
 
 export const DEMO_CAKES_DATA: TCakeListing[] = [
   {
-    id: 'nimru-athurugiriya',
-    vendorName: 'Nimru Cakes with Love',
-    vendorLogo: LOGO('Nimru'),
+    id: 'hostlanka-colombo',
+    vendorName: 'Hostlanka Business',
+    vendorLogo: LOGO('Hostlanka'),
     title: 'Elegant Wedding & Birthday Cakes – Custom Orders',
     province: 'Western Province',
     town: 'Athurugiriya',

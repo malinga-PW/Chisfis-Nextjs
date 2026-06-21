@@ -30,7 +30,7 @@ export default function VendorDashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-semibold">Vendor Dashboard</h1>
-            <p className="mt-1 text-neutral-500">Welcome back, Nimru Cakes!</p>
+            <p className="mt-1 text-neutral-500">Welcome back, Hostlanka Business!</p>
           </div>
         </div>
 

@@ -11,7 +11,9 @@ import {
   upsertVendorBusinessEmailSettings,
   type VendorBusinessEmailMessage,
 } from '@/lib/supabase/vendorBusinessEmail'
+import { fetchVendorProfile, upsertVendorProfile } from '@/lib/supabase/vendorProfile'
 import { isSupabaseConfigured } from '@/lib/supabase/client'
+import { useSession } from 'next-auth/react'
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 
 /* ---------- Types ---------- */
@@ -280,6 +282,7 @@ const TAB_ITEMS: { key: TabKey; label: string; icon: string }[] = [
    ========================================= */
 export default function VendorProfilePage() {
   const { user } = useAuth()
+  const { update } = useSession()
   const uid = user?.id ?? ''
   const [profile, setProfile] = useState<VendorProfile>(EMPTY_PROFILE(uid))
   const [activeTab, setActiveTab] = useState<TabKey>('business')
@@ -330,12 +333,23 @@ export default function VendorProfilePage() {
       if (!isSupabaseConfigured()) return
       try {
         setEmailSyncStatus('loading')
-        const [settings, messages] = await Promise.all([
+        const [settings, messages, dbProfile] = await Promise.all([
           fetchVendorBusinessEmailSettings(vendorId),
           fetchVendorBusinessEmailInbox(vendorId),
+          fetchVendorProfile(vendorId),
         ])
         if (!mounted) return
-        if (settings) {
+
+        if (dbProfile) {
+          setProfile((prev) => ({
+            ...prev,
+            ...dbProfile,
+            businessEmailLocalPart: settings?.localPart ?? prev.businessEmailLocalPart,
+            businessEmailDomain: settings?.domain ?? prev.businessEmailDomain,
+            businessEmailForwarding: settings?.forwardingEmail ?? prev.businessEmailForwarding,
+            businessEmailNotifications: settings?.notificationsEnabled ?? prev.businessEmailNotifications,
+          }))
+        } else if (settings) {
           setProfile((prev) => ({
             ...prev,
             businessEmailLocalPart: settings.localPart,
@@ -363,13 +377,18 @@ export default function VendorProfilePage() {
     setSaving(true)
     if (isSupabaseConfigured()) {
       try {
-        await upsertVendorBusinessEmailSettings({
-          vendorId: uid,
-          localPart: profile.businessEmailLocalPart,
-          domain: profile.businessEmailDomain,
-          forwardingEmail: profile.businessEmailForwarding,
-          notificationsEnabled: profile.businessEmailNotifications,
-        })
+        await Promise.all([
+          upsertVendorProfile(uid, profile),
+          upsertVendorBusinessEmailSettings({
+            vendorId: uid,
+            localPart: profile.businessEmailLocalPart,
+            domain: profile.businessEmailDomain,
+            forwardingEmail: profile.businessEmailForwarding,
+            notificationsEnabled: profile.businessEmailNotifications,
+          }),
+        ])
+        // Update the session so the new avatar reflects in the navbar
+        await update({ avatar: profile.ownerPhoto || profile.logo })
         setEmailSyncStatus('ready')
       } catch (_error) {
         setEmailSyncStatus('error')
@@ -567,7 +586,7 @@ export default function VendorProfilePage() {
                       label="Business Name"
                       value={profile.businessName}
                       onChange={(v) => setProfile((p) => ({ ...p, businessName: v }))}
-                      placeholder="e.g. Nimru Cakes with Love"
+                      placeholder="e.g. Hostlanka Business"
                     />
                     <FieldInput
                       label="Short Bio / Tagline"
@@ -1312,7 +1331,7 @@ export default function VendorProfilePage() {
                   <p className="mt-1 font-mono text-base font-semibold">
                     {profile.businessEmailLocalPart || 'yourbrand'}@{profile.businessEmailDomain || 'hostlanka.online'}
                   </p>
-                  <p className="mt-1 text-xs text-neutral-500">Example: nimrucakes@hostlanka.online</p>
+                  <p className="mt-1 text-xs text-neutral-500">Example: mybusiness@hostlanka.online</p>
                 </div>
 
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">

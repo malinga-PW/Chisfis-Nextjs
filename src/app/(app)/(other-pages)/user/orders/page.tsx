@@ -3,7 +3,7 @@
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 const MOCK_ORDERS = [
-  { id: 'ORD-001', baker: 'Nimru Cakes', item: '3-Tier Wedding Cake', weight: '5kg', amount: 'LKR 25,000', status: 'Out for Delivery', date: '2026-06-18' },
+  { id: 'ORD-001', baker: 'Hostlanka Business', item: '3-Tier Wedding Cake', weight: '5kg', amount: 'LKR 25,000', status: 'Out for Delivery', date: '2026-06-18' },
   { id: 'ORD-002', baker: 'Sweet Cravings', item: 'Cupcake Box (24 pcs)', weight: '1kg', amount: 'LKR 4,500', status: 'Baking', date: '2026-06-20' },
   { id: 'ORD-003', baker: 'Kandy Cake House', item: 'Chocolate Birthday Cake', weight: '2kg', amount: 'LKR 6,800', status: 'Pending', date: '2026-06-22' },
 ]
